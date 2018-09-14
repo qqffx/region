@@ -1,0 +1,46 @@
+version(1);
+
+project_name = "Region";
+
+patterns = {
+"*.c",
+"*.h",
+"*.s",
+"*.bat",
+"*.4coder",
+"*.ld",
+};
+
+blacklist_pattern = {
+"*.", 
+};
+
+load_path_win = {
+ {"."}
+};
+
+load_paths = {
+{ load_path_win, .os = "win" },
+}; 
+
+run_win = "flash.bat";
+
+command_list = {
+ { .name = "build",
+   .out = "*compilation*", .footer_panel = true, .save_dirty_files = true, .cursor_at_end = false,
+   .cmd = { { "build.bat", .os = "win" }, },
+ },
+
+ { .name = "flash",
+   .out = "*flash*", .footer_panel = true, .save_dirty_files = false, .cursor_at_end = false,
+   .cmd = { { run_win, .os = "win"}, },
+ },
+ { .name = "clean",
+   .out = "*clean*", .footer_panel = true, .save_dirty_files = false, .cursor_at_end = false,
+   .cmd = { { "clean.bat", .os = "win"}, },
+ },
+};	
+
+fkey_command[1] = "build";
+fkey_command[2] = "flash";
+fkey_command[3] = "clean";

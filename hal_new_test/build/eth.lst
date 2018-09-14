@@ -1,0 +1,681 @@
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"eth.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.MX_ETH_Init,"ax",%progbits
+  17              		.align	1
+  18              		.global	MX_ETH_Init
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu fpv5-d16
+  24              	MX_ETH_Init:
+  25              	.LFB137:
+  26              		.file 1 "Src/eth.c"
+   1:Src/eth.c     **** /**
+   2:Src/eth.c     ****   ******************************************************************************
+   3:Src/eth.c     ****   * File Name          : ETH.c
+   4:Src/eth.c     ****   * Description        : This file provides code for the configuration
+   5:Src/eth.c     ****   *                      of the ETH instances.
+   6:Src/eth.c     ****   ******************************************************************************
+   7:Src/eth.c     ****   * This notice applies to any and all portions of this file
+   8:Src/eth.c     ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/eth.c     ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/eth.c     ****   * inserted by the user or by software development tools
+  11:Src/eth.c     ****   * are owned by their respective copyright owners.
+  12:Src/eth.c     ****   *
+  13:Src/eth.c     ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/eth.c     ****   * All rights reserved.
+  15:Src/eth.c     ****   *
+  16:Src/eth.c     ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/eth.c     ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/eth.c     ****   *
+  19:Src/eth.c     ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/eth.c     ****   *    this list of conditions and the following disclaimer.
+  21:Src/eth.c     ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/eth.c     ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/eth.c     ****   *    and/or other materials provided with the distribution.
+  24:Src/eth.c     ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/eth.c     ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/eth.c     ****   *    derived from this software without specific written permission.
+  27:Src/eth.c     ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/eth.c     ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/eth.c     ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/eth.c     ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/eth.c     ****   *    this license is void and will automatically terminate your rights under 
+  32:Src/eth.c     ****   *    this license. 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 2
+
+
+  33:Src/eth.c     ****   *
+  34:Src/eth.c     ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/eth.c     ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/eth.c     ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/eth.c     ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/eth.c     ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/eth.c     ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/eth.c     ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/eth.c     ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/eth.c     ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/eth.c     ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/eth.c     ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/eth.c     ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/eth.c     ****   *
+  47:Src/eth.c     ****   ******************************************************************************
+  48:Src/eth.c     ****   */
+  49:Src/eth.c     **** 
+  50:Src/eth.c     **** /* Includes ------------------------------------------------------------------*/
+  51:Src/eth.c     **** #include "eth.h"
+  52:Src/eth.c     **** 
+  53:Src/eth.c     **** #include "gpio.h"
+  54:Src/eth.c     **** 
+  55:Src/eth.c     **** #if defined ( __ICCARM__ ) /*!< IAR Compiler */
+  56:Src/eth.c     **** 
+  57:Src/eth.c     **** #pragma location=0x30040000
+  58:Src/eth.c     **** ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptors */
+  59:Src/eth.c     **** #pragma location=0x30040060
+  60:Src/eth.c     **** ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
+  61:Src/eth.c     **** #pragma location=0x30040200
+  62:Src/eth.c     **** uint8_t Rx_Buff[ETH_RX_DESC_CNT][ETH_MAX_PACKET_SIZE]; /* Ethernet Receive Buffers */
+  63:Src/eth.c     **** 
+  64:Src/eth.c     **** #elif defined ( __CC_ARM )  /* MDK ARM Compiler */
+  65:Src/eth.c     **** 
+  66:Src/eth.c     **** __attribute__((at(0x30040000))) ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx D
+  67:Src/eth.c     **** __attribute__((at(0x30040060))) ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx D
+  68:Src/eth.c     **** __attribute__((at(0x30040200))) uint8_t Rx_Buff[ETH_RX_DESC_CNT][ETH_MAX_PACKET_SIZE]; /* Ethernet 
+  69:Src/eth.c     **** 
+  70:Src/eth.c     **** #elif defined ( __GNUC__ ) /* GNU Compiler */ 
+  71:Src/eth.c     **** 
+  72:Src/eth.c     **** ETH_DMADescTypeDef DMARxDscrTab[ETH_RX_DESC_CNT] __attribute__((section(".RxDecripSection"))); /* E
+  73:Src/eth.c     **** ETH_DMADescTypeDef DMATxDscrTab[ETH_TX_DESC_CNT] __attribute__((section(".TxDecripSection")));   /*
+  74:Src/eth.c     **** uint8_t Rx_Buff[ETH_RX_DESC_CNT][ETH_MAX_PACKET_SIZE] __attribute__((section(".RxArraySection"))); 
+  75:Src/eth.c     **** 
+  76:Src/eth.c     **** #endif
+  77:Src/eth.c     **** 
+  78:Src/eth.c     **** ETH_TxPacketConfig TxConfig; 
+  79:Src/eth.c     **** 
+  80:Src/eth.c     **** /* USER CODE BEGIN 0 */
+  81:Src/eth.c     **** 
+  82:Src/eth.c     **** /* USER CODE END 0 */
+  83:Src/eth.c     **** 
+  84:Src/eth.c     **** ETH_HandleTypeDef heth;
+  85:Src/eth.c     **** 
+  86:Src/eth.c     **** /* ETH init function */
+  87:Src/eth.c     **** void MX_ETH_Init(void)
+  88:Src/eth.c     **** {
+  27              		.loc 1 88 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 3
+
+
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 10B5     		push	{r4, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  89:Src/eth.c     ****    uint8_t MACAddr[6] ;
+  90:Src/eth.c     **** 
+  91:Src/eth.c     ****   heth.Instance = ETH;
+  39              		.loc 1 91 0
+  40 0004 1948     		ldr	r0, .L5
+  41 0006 1A4B     		ldr	r3, .L5+4
+  42 0008 0360     		str	r3, [r0]
+  92:Src/eth.c     ****   MACAddr[0] = 0x00;
+  43              		.loc 1 92 0
+  44 000a 0023     		movs	r3, #0
+  45 000c 8DF80030 		strb	r3, [sp]
+  93:Src/eth.c     ****   MACAddr[1] = 0x80;
+  46              		.loc 1 93 0
+  47 0010 8022     		movs	r2, #128
+  48 0012 8DF80120 		strb	r2, [sp, #1]
+  94:Src/eth.c     ****   MACAddr[2] = 0xE1;
+  49              		.loc 1 94 0
+  50 0016 E122     		movs	r2, #225
+  51 0018 8DF80220 		strb	r2, [sp, #2]
+  95:Src/eth.c     ****   MACAddr[3] = 0x00;
+  52              		.loc 1 95 0
+  53 001c 8DF80330 		strb	r3, [sp, #3]
+  96:Src/eth.c     ****   MACAddr[4] = 0x00;
+  54              		.loc 1 96 0
+  55 0020 8DF80430 		strb	r3, [sp, #4]
+  97:Src/eth.c     ****   MACAddr[5] = 0x00;
+  56              		.loc 1 97 0
+  57 0024 8DF80530 		strb	r3, [sp, #5]
+  98:Src/eth.c     ****   heth.Init.MACAddr = &MACAddr[0];
+  58              		.loc 1 98 0
+  59 0028 C0F804D0 		str	sp, [r0, #4]
+  99:Src/eth.c     ****   heth.Init.MediaInterface = HAL_ETH_RMII_MODE;
+  60              		.loc 1 99 0
+  61 002c 0123     		movs	r3, #1
+  62 002e 0372     		strb	r3, [r0, #8]
+ 100:Src/eth.c     ****   heth.Init.TxDesc = DMATxDscrTab;
+  63              		.loc 1 100 0
+  64 0030 104B     		ldr	r3, .L5+8
+  65 0032 C360     		str	r3, [r0, #12]
+ 101:Src/eth.c     ****   heth.Init.RxDesc = DMARxDscrTab;
+  66              		.loc 1 101 0
+  67 0034 104B     		ldr	r3, .L5+12
+  68 0036 0361     		str	r3, [r0, #16]
+ 102:Src/eth.c     ****   heth.Init.RxBuffLen = 1524;
+  69              		.loc 1 102 0
+  70 0038 40F2F453 		movw	r3, #1524
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 4
+
+
+  71 003c 4361     		str	r3, [r0, #20]
+ 103:Src/eth.c     **** 
+ 104:Src/eth.c     ****   /* USER CODE BEGIN MACADDRESS */
+ 105:Src/eth.c     ****     
+ 106:Src/eth.c     ****   /* USER CODE END MACADDRESS */
+ 107:Src/eth.c     **** 
+ 108:Src/eth.c     ****   if (HAL_ETH_Init(&heth) != HAL_OK)
+  72              		.loc 1 108 0
+  73 003e FFF7FEFF 		bl	HAL_ETH_Init
+  74              	.LVL0:
+  75 0042 68B9     		cbnz	r0, .L4
+  76              	.L2:
+ 109:Src/eth.c     ****   {
+ 110:Src/eth.c     ****     _Error_Handler(__FILE__, __LINE__);
+ 111:Src/eth.c     ****   }
+ 112:Src/eth.c     **** 
+ 113:Src/eth.c     ****   memset(&TxConfig, 0 , sizeof(ETH_TxPacketConfig));
+  77              		.loc 1 113 0
+  78 0044 0D4C     		ldr	r4, .L5+16
+  79 0046 3022     		movs	r2, #48
+  80 0048 0021     		movs	r1, #0
+  81 004a 2046     		mov	r0, r4
+  82 004c FFF7FEFF 		bl	memset
+  83              	.LVL1:
+ 114:Src/eth.c     ****   TxConfig.Attributes = ETH_TX_PACKETS_FEATURES_CSUM | ETH_TX_PACKETS_FEATURES_CRCPAD;
+  84              		.loc 1 114 0
+  85 0050 2123     		movs	r3, #33
+  86 0052 44F8043C 		str	r3, [r4, #-4]
+ 115:Src/eth.c     ****   TxConfig.ChecksumCtrl = ETH_CHECKSUM_IPHDR_PAYLOAD_INSERT_PHDR_CALC;
+  87              		.loc 1 115 0
+  88 0056 4FF44033 		mov	r3, #196608
+  89 005a 2361     		str	r3, [r4, #16]
+ 116:Src/eth.c     ****   TxConfig.CRCPadCtrl = ETH_CRC_PAD_INSERT;
+ 117:Src/eth.c     **** 
+ 118:Src/eth.c     **** }
+  90              		.loc 1 118 0
+  91 005c 02B0     		add	sp, sp, #8
+  92              	.LCFI2:
+  93              		.cfi_remember_state
+  94              		.cfi_def_cfa_offset 8
+  95              		@ sp needed
+  96 005e 10BD     		pop	{r4, pc}
+  97              	.L4:
+  98              	.LCFI3:
+  99              		.cfi_restore_state
+ 110:Src/eth.c     ****   }
+ 100              		.loc 1 110 0
+ 101 0060 6E21     		movs	r1, #110
+ 102 0062 0748     		ldr	r0, .L5+20
+ 103 0064 FFF7FEFF 		bl	_Error_Handler
+ 104              	.LVL2:
+ 105 0068 ECE7     		b	.L2
+ 106              	.L6:
+ 107 006a 00BF     		.align	2
+ 108              	.L5:
+ 109 006c 00000000 		.word	heth
+ 110 0070 00800240 		.word	1073905664
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 5
+
+
+ 111 0074 00000000 		.word	.LANCHOR0
+ 112 0078 00000000 		.word	.LANCHOR1
+ 113 007c 04000000 		.word	TxConfig+4
+ 114 0080 00000000 		.word	.LC0
+ 115              		.cfi_endproc
+ 116              	.LFE137:
+ 118              		.section	.text.HAL_ETH_MspInit,"ax",%progbits
+ 119              		.align	1
+ 120              		.global	HAL_ETH_MspInit
+ 121              		.syntax unified
+ 122              		.thumb
+ 123              		.thumb_func
+ 124              		.fpu fpv5-d16
+ 126              	HAL_ETH_MspInit:
+ 127              	.LFB138:
+ 119:Src/eth.c     **** 
+ 120:Src/eth.c     **** void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
+ 121:Src/eth.c     **** {
+ 128              		.loc 1 121 0
+ 129              		.cfi_startproc
+ 130              		@ args = 0, pretend = 0, frame = 32
+ 131              		@ frame_needed = 0, uses_anonymous_args = 0
+ 132              	.LVL3:
+ 122:Src/eth.c     **** 
+ 123:Src/eth.c     ****   GPIO_InitTypeDef GPIO_InitStruct;
+ 124:Src/eth.c     ****   if(ethHandle->Instance==ETH)
+ 133              		.loc 1 124 0
+ 134 0000 0268     		ldr	r2, [r0]
+ 135 0002 2D4B     		ldr	r3, .L14
+ 136 0004 9A42     		cmp	r2, r3
+ 137 0006 00D0     		beq	.L13
+ 138 0008 7047     		bx	lr
+ 139              	.L13:
+ 121:Src/eth.c     **** 
+ 140              		.loc 1 121 0
+ 141 000a 70B5     		push	{r4, r5, r6, lr}
+ 142              	.LCFI4:
+ 143              		.cfi_def_cfa_offset 16
+ 144              		.cfi_offset 4, -16
+ 145              		.cfi_offset 5, -12
+ 146              		.cfi_offset 6, -8
+ 147              		.cfi_offset 14, -4
+ 148 000c 88B0     		sub	sp, sp, #32
+ 149              	.LCFI5:
+ 150              		.cfi_def_cfa_offset 48
+ 151              	.LBB2:
+ 125:Src/eth.c     ****   {
+ 126:Src/eth.c     ****   /* USER CODE BEGIN ETH_MspInit 0 */
+ 127:Src/eth.c     **** 
+ 128:Src/eth.c     ****   /* USER CODE END ETH_MspInit 0 */
+ 129:Src/eth.c     ****     /* ETH clock enable */
+ 130:Src/eth.c     ****     __HAL_RCC_ETH1MAC_CLK_ENABLE();
+ 152              		.loc 1 130 0
+ 153 000e 2B4B     		ldr	r3, .L14+4
+ 154 0010 D3F8D820 		ldr	r2, [r3, #216]
+ 155 0014 42F40042 		orr	r2, r2, #32768
+ 156 0018 C3F8D820 		str	r2, [r3, #216]
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 6
+
+
+ 157 001c D3F8D820 		ldr	r2, [r3, #216]
+ 158 0020 02F40042 		and	r2, r2, #32768
+ 159 0024 0092     		str	r2, [sp]
+ 160 0026 009A     		ldr	r2, [sp]
+ 161              	.LBE2:
+ 162              	.LBB3:
+ 131:Src/eth.c     ****     __HAL_RCC_ETH1TX_CLK_ENABLE();
+ 163              		.loc 1 131 0
+ 164 0028 D3F8D820 		ldr	r2, [r3, #216]
+ 165 002c 42F48032 		orr	r2, r2, #65536
+ 166 0030 C3F8D820 		str	r2, [r3, #216]
+ 167 0034 D3F8D820 		ldr	r2, [r3, #216]
+ 168 0038 02F48032 		and	r2, r2, #65536
+ 169 003c 0192     		str	r2, [sp, #4]
+ 170 003e 019A     		ldr	r2, [sp, #4]
+ 171              	.LBE3:
+ 172              	.LBB4:
+ 132:Src/eth.c     ****     __HAL_RCC_ETH1RX_CLK_ENABLE();
+ 173              		.loc 1 132 0
+ 174 0040 D3F8D820 		ldr	r2, [r3, #216]
+ 175 0044 42F40032 		orr	r2, r2, #131072
+ 176 0048 C3F8D820 		str	r2, [r3, #216]
+ 177 004c D3F8D830 		ldr	r3, [r3, #216]
+ 178 0050 03F40033 		and	r3, r3, #131072
+ 179 0054 0293     		str	r3, [sp, #8]
+ 180 0056 029B     		ldr	r3, [sp, #8]
+ 181              	.LBE4:
+ 133:Src/eth.c     ****   
+ 134:Src/eth.c     ****     /**ETH GPIO Configuration    
+ 135:Src/eth.c     ****     PC1     ------> ETH_MDC
+ 136:Src/eth.c     ****     PA1     ------> ETH_REF_CLK
+ 137:Src/eth.c     ****     PA2     ------> ETH_MDIO
+ 138:Src/eth.c     ****     PA7     ------> ETH_CRS_DV
+ 139:Src/eth.c     ****     PC4     ------> ETH_RXD0
+ 140:Src/eth.c     ****     PC5     ------> ETH_RXD1
+ 141:Src/eth.c     ****     PB13     ------> ETH_TXD1
+ 142:Src/eth.c     ****     PG11     ------> ETH_TX_EN
+ 143:Src/eth.c     ****     PG13     ------> ETH_TXD0 
+ 144:Src/eth.c     ****     */
+ 145:Src/eth.c     ****     GPIO_InitStruct.Pin = RMII_MDC_Pin|RMII_RXD0_Pin|RMII_RXD1_Pin;
+ 182              		.loc 1 145 0
+ 183 0058 3223     		movs	r3, #50
+ 184 005a 0393     		str	r3, [sp, #12]
+ 146:Src/eth.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 185              		.loc 1 146 0
+ 186 005c 0226     		movs	r6, #2
+ 187 005e 0496     		str	r6, [sp, #16]
+ 147:Src/eth.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 188              		.loc 1 147 0
+ 189 0060 0024     		movs	r4, #0
+ 190 0062 0594     		str	r4, [sp, #20]
+ 148:Src/eth.c     ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 191              		.loc 1 148 0
+ 192 0064 0694     		str	r4, [sp, #24]
+ 149:Src/eth.c     ****     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+ 193              		.loc 1 149 0
+ 194 0066 0B25     		movs	r5, #11
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 7
+
+
+ 195 0068 0795     		str	r5, [sp, #28]
+ 150:Src/eth.c     ****     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 196              		.loc 1 150 0
+ 197 006a 03A9     		add	r1, sp, #12
+ 198 006c 1448     		ldr	r0, .L14+8
+ 199              	.LVL4:
+ 200 006e FFF7FEFF 		bl	HAL_GPIO_Init
+ 201              	.LVL5:
+ 151:Src/eth.c     **** 
+ 152:Src/eth.c     ****     GPIO_InitStruct.Pin = RMII_REF_CLK_Pin|RMII_MDIO_Pin|RMII_CRS_DV_Pin;
+ 202              		.loc 1 152 0
+ 203 0072 8623     		movs	r3, #134
+ 204 0074 0393     		str	r3, [sp, #12]
+ 153:Src/eth.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 205              		.loc 1 153 0
+ 206 0076 0496     		str	r6, [sp, #16]
+ 154:Src/eth.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 207              		.loc 1 154 0
+ 208 0078 0594     		str	r4, [sp, #20]
+ 155:Src/eth.c     ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 209              		.loc 1 155 0
+ 210 007a 0694     		str	r4, [sp, #24]
+ 156:Src/eth.c     ****     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+ 211              		.loc 1 156 0
+ 212 007c 0795     		str	r5, [sp, #28]
+ 157:Src/eth.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 213              		.loc 1 157 0
+ 214 007e 03A9     		add	r1, sp, #12
+ 215 0080 1048     		ldr	r0, .L14+12
+ 216 0082 FFF7FEFF 		bl	HAL_GPIO_Init
+ 217              	.LVL6:
+ 158:Src/eth.c     **** 
+ 159:Src/eth.c     ****     GPIO_InitStruct.Pin = RMII_TXD1_Pin;
+ 218              		.loc 1 159 0
+ 219 0086 4FF40053 		mov	r3, #8192
+ 220 008a 0393     		str	r3, [sp, #12]
+ 160:Src/eth.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 221              		.loc 1 160 0
+ 222 008c 0496     		str	r6, [sp, #16]
+ 161:Src/eth.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 223              		.loc 1 161 0
+ 224 008e 0594     		str	r4, [sp, #20]
+ 162:Src/eth.c     ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 225              		.loc 1 162 0
+ 226 0090 0694     		str	r4, [sp, #24]
+ 163:Src/eth.c     ****     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+ 227              		.loc 1 163 0
+ 228 0092 0795     		str	r5, [sp, #28]
+ 164:Src/eth.c     ****     HAL_GPIO_Init(RMII_TXD1_GPIO_Port, &GPIO_InitStruct);
+ 229              		.loc 1 164 0
+ 230 0094 03A9     		add	r1, sp, #12
+ 231 0096 0C48     		ldr	r0, .L14+16
+ 232 0098 FFF7FEFF 		bl	HAL_GPIO_Init
+ 233              	.LVL7:
+ 165:Src/eth.c     **** 
+ 166:Src/eth.c     ****     GPIO_InitStruct.Pin = RMII_TX_EN_Pin|RMII_TXD0_Pin;
+ 234              		.loc 1 166 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 8
+
+
+ 235 009c 4FF42053 		mov	r3, #10240
+ 236 00a0 0393     		str	r3, [sp, #12]
+ 167:Src/eth.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 237              		.loc 1 167 0
+ 238 00a2 0496     		str	r6, [sp, #16]
+ 168:Src/eth.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 239              		.loc 1 168 0
+ 240 00a4 0594     		str	r4, [sp, #20]
+ 169:Src/eth.c     ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 241              		.loc 1 169 0
+ 242 00a6 0694     		str	r4, [sp, #24]
+ 170:Src/eth.c     ****     GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+ 243              		.loc 1 170 0
+ 244 00a8 0795     		str	r5, [sp, #28]
+ 171:Src/eth.c     ****     HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+ 245              		.loc 1 171 0
+ 246 00aa 03A9     		add	r1, sp, #12
+ 247 00ac 0748     		ldr	r0, .L14+20
+ 248 00ae FFF7FEFF 		bl	HAL_GPIO_Init
+ 249              	.LVL8:
+ 172:Src/eth.c     **** 
+ 173:Src/eth.c     ****   /* USER CODE BEGIN ETH_MspInit 1 */
+ 174:Src/eth.c     **** 
+ 175:Src/eth.c     ****   /* USER CODE END ETH_MspInit 1 */
+ 176:Src/eth.c     ****   }
+ 177:Src/eth.c     **** }
+ 250              		.loc 1 177 0
+ 251 00b2 08B0     		add	sp, sp, #32
+ 252              	.LCFI6:
+ 253              		.cfi_def_cfa_offset 16
+ 254              		@ sp needed
+ 255 00b4 70BD     		pop	{r4, r5, r6, pc}
+ 256              	.L15:
+ 257 00b6 00BF     		.align	2
+ 258              	.L14:
+ 259 00b8 00800240 		.word	1073905664
+ 260 00bc 00440258 		.word	1476543488
+ 261 00c0 00080258 		.word	1476528128
+ 262 00c4 00000258 		.word	1476526080
+ 263 00c8 00040258 		.word	1476527104
+ 264 00cc 00180258 		.word	1476532224
+ 265              		.cfi_endproc
+ 266              	.LFE138:
+ 268              		.section	.text.HAL_ETH_MspDeInit,"ax",%progbits
+ 269              		.align	1
+ 270              		.global	HAL_ETH_MspDeInit
+ 271              		.syntax unified
+ 272              		.thumb
+ 273              		.thumb_func
+ 274              		.fpu fpv5-d16
+ 276              	HAL_ETH_MspDeInit:
+ 277              	.LFB139:
+ 178:Src/eth.c     **** 
+ 179:Src/eth.c     **** void HAL_ETH_MspDeInit(ETH_HandleTypeDef* ethHandle)
+ 180:Src/eth.c     **** {
+ 278              		.loc 1 180 0
+ 279              		.cfi_startproc
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 9
+
+
+ 280              		@ args = 0, pretend = 0, frame = 0
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 282              	.LVL9:
+ 283 0000 08B5     		push	{r3, lr}
+ 284              	.LCFI7:
+ 285              		.cfi_def_cfa_offset 8
+ 286              		.cfi_offset 3, -8
+ 287              		.cfi_offset 14, -4
+ 181:Src/eth.c     **** 
+ 182:Src/eth.c     ****   if(ethHandle->Instance==ETH)
+ 288              		.loc 1 182 0
+ 289 0002 0268     		ldr	r2, [r0]
+ 290 0004 144B     		ldr	r3, .L20
+ 291 0006 9A42     		cmp	r2, r3
+ 292 0008 00D0     		beq	.L19
+ 293              	.LVL10:
+ 294              	.L16:
+ 183:Src/eth.c     ****   {
+ 184:Src/eth.c     ****   /* USER CODE BEGIN ETH_MspDeInit 0 */
+ 185:Src/eth.c     **** 
+ 186:Src/eth.c     ****   /* USER CODE END ETH_MspDeInit 0 */
+ 187:Src/eth.c     ****     /* Peripheral clock disable */
+ 188:Src/eth.c     ****     __HAL_RCC_ETH1MAC_CLK_DISABLE();
+ 189:Src/eth.c     ****     __HAL_RCC_ETH1TX_CLK_DISABLE();
+ 190:Src/eth.c     ****     __HAL_RCC_ETH1RX_CLK_DISABLE();
+ 191:Src/eth.c     ****   
+ 192:Src/eth.c     ****     /**ETH GPIO Configuration    
+ 193:Src/eth.c     ****     PC1     ------> ETH_MDC
+ 194:Src/eth.c     ****     PA1     ------> ETH_REF_CLK
+ 195:Src/eth.c     ****     PA2     ------> ETH_MDIO
+ 196:Src/eth.c     ****     PA7     ------> ETH_CRS_DV
+ 197:Src/eth.c     ****     PC4     ------> ETH_RXD0
+ 198:Src/eth.c     ****     PC5     ------> ETH_RXD1
+ 199:Src/eth.c     ****     PB13     ------> ETH_TXD1
+ 200:Src/eth.c     ****     PG11     ------> ETH_TX_EN
+ 201:Src/eth.c     ****     PG13     ------> ETH_TXD0 
+ 202:Src/eth.c     ****     */
+ 203:Src/eth.c     ****     HAL_GPIO_DeInit(GPIOC, RMII_MDC_Pin|RMII_RXD0_Pin|RMII_RXD1_Pin);
+ 204:Src/eth.c     **** 
+ 205:Src/eth.c     ****     HAL_GPIO_DeInit(GPIOA, RMII_REF_CLK_Pin|RMII_MDIO_Pin|RMII_CRS_DV_Pin);
+ 206:Src/eth.c     **** 
+ 207:Src/eth.c     ****     HAL_GPIO_DeInit(RMII_TXD1_GPIO_Port, RMII_TXD1_Pin);
+ 208:Src/eth.c     **** 
+ 209:Src/eth.c     ****     HAL_GPIO_DeInit(GPIOG, RMII_TX_EN_Pin|RMII_TXD0_Pin);
+ 210:Src/eth.c     **** 
+ 211:Src/eth.c     ****   /* USER CODE BEGIN ETH_MspDeInit 1 */
+ 212:Src/eth.c     **** 
+ 213:Src/eth.c     ****   /* USER CODE END ETH_MspDeInit 1 */
+ 214:Src/eth.c     ****   }
+ 215:Src/eth.c     **** } 
+ 295              		.loc 1 215 0
+ 296 000a 08BD     		pop	{r3, pc}
+ 297              	.LVL11:
+ 298              	.L19:
+ 188:Src/eth.c     ****     __HAL_RCC_ETH1TX_CLK_DISABLE();
+ 299              		.loc 1 188 0
+ 300 000c 134B     		ldr	r3, .L20+4
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 10
+
+
+ 301 000e D3F8D820 		ldr	r2, [r3, #216]
+ 302 0012 22F40042 		bic	r2, r2, #32768
+ 303 0016 C3F8D820 		str	r2, [r3, #216]
+ 189:Src/eth.c     ****     __HAL_RCC_ETH1RX_CLK_DISABLE();
+ 304              		.loc 1 189 0
+ 305 001a D3F8D820 		ldr	r2, [r3, #216]
+ 306 001e 22F48032 		bic	r2, r2, #65536
+ 307 0022 C3F8D820 		str	r2, [r3, #216]
+ 190:Src/eth.c     ****   
+ 308              		.loc 1 190 0
+ 309 0026 D3F8D820 		ldr	r2, [r3, #216]
+ 310 002a 22F40032 		bic	r2, r2, #131072
+ 311 002e C3F8D820 		str	r2, [r3, #216]
+ 203:Src/eth.c     **** 
+ 312              		.loc 1 203 0
+ 313 0032 3221     		movs	r1, #50
+ 314 0034 0A48     		ldr	r0, .L20+8
+ 315              	.LVL12:
+ 316 0036 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 317              	.LVL13:
+ 205:Src/eth.c     **** 
+ 318              		.loc 1 205 0
+ 319 003a 8621     		movs	r1, #134
+ 320 003c 0948     		ldr	r0, .L20+12
+ 321 003e FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 322              	.LVL14:
+ 207:Src/eth.c     **** 
+ 323              		.loc 1 207 0
+ 324 0042 4FF40051 		mov	r1, #8192
+ 325 0046 0848     		ldr	r0, .L20+16
+ 326 0048 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 327              	.LVL15:
+ 209:Src/eth.c     **** 
+ 328              		.loc 1 209 0
+ 329 004c 4FF42051 		mov	r1, #10240
+ 330 0050 0648     		ldr	r0, .L20+20
+ 331 0052 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 332              	.LVL16:
+ 333              		.loc 1 215 0
+ 334 0056 D8E7     		b	.L16
+ 335              	.L21:
+ 336              		.align	2
+ 337              	.L20:
+ 338 0058 00800240 		.word	1073905664
+ 339 005c 00440258 		.word	1476543488
+ 340 0060 00080258 		.word	1476528128
+ 341 0064 00000258 		.word	1476526080
+ 342 0068 00040258 		.word	1476527104
+ 343 006c 00180258 		.word	1476532224
+ 344              		.cfi_endproc
+ 345              	.LFE139:
+ 347              		.comm	heth,104,4
+ 348              		.comm	TxConfig,52,4
+ 349              		.global	Rx_Buff
+ 350              		.global	DMATxDscrTab
+ 351              		.global	DMARxDscrTab
+ 352              		.section	.RxArraySection,"aw",%progbits
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 11
+
+
+ 353              		.align	2
+ 356              	Rx_Buff:
+ 357 0000 00000000 		.space	6112
+ 357      00000000 
+ 357      00000000 
+ 357      00000000 
+ 357      00000000 
+ 358              		.section	.RxDecripSection,"aw",%progbits
+ 359              		.align	2
+ 360              		.set	.LANCHOR1,. + 0
+ 363              	DMARxDscrTab:
+ 364 0000 00000000 		.space	96
+ 364      00000000 
+ 364      00000000 
+ 364      00000000 
+ 364      00000000 
+ 365              		.section	.TxDecripSection,"aw",%progbits
+ 366              		.align	2
+ 367              		.set	.LANCHOR0,. + 0
+ 370              	DMATxDscrTab:
+ 371 0000 00000000 		.space	96
+ 371      00000000 
+ 371      00000000 
+ 371      00000000 
+ 371      00000000 
+ 372              		.section	.rodata.MX_ETH_Init.str1.4,"aMS",%progbits,1
+ 373              		.align	2
+ 374              	.LC0:
+ 375 0000 5372632F 		.ascii	"Src/eth.c\000"
+ 375      6574682E 
+ 375      6300
+ 376              		.text
+ 377              	.Letext0:
+ 378              		.file 2 "c:\\gcc\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 379              		.file 3 "c:\\gcc\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 380              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 381              		.file 5 "Drivers/CMSIS/Device/ST/STM32H7xx/Include/system_stm32h7xx.h"
+ 382              		.file 6 "Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h743xx.h"
+ 383              		.file 7 "c:\\gcc\\arm-none-eabi\\include\\sys\\lock.h"
+ 384              		.file 8 "c:\\gcc\\arm-none-eabi\\include\\sys\\_types.h"
+ 385              		.file 9 "c:\\gcc\\lib\\gcc\\arm-none-eabi\\7.3.1\\include\\stddef.h"
+ 386              		.file 10 "c:\\gcc\\arm-none-eabi\\include\\sys\\reent.h"
+ 387              		.file 11 "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h"
+ 388              		.file 12 "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_gpio.h"
+ 389              		.file 13 "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_eth.h"
+ 390              		.file 14 "Inc/eth.h"
+ 391              		.file 15 "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h"
+ 392              		.file 16 "<built-in>"
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 eth.c
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:17     .text.MX_ETH_Init:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:24     .text.MX_ETH_Init:00000000 MX_ETH_Init
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:109    .text.MX_ETH_Init:0000006c $d
+                            *COM*:00000068 heth
+                            *COM*:00000034 TxConfig
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:119    .text.HAL_ETH_MspInit:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:126    .text.HAL_ETH_MspInit:00000000 HAL_ETH_MspInit
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:259    .text.HAL_ETH_MspInit:000000b8 $d
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:269    .text.HAL_ETH_MspDeInit:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:276    .text.HAL_ETH_MspDeInit:00000000 HAL_ETH_MspDeInit
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:338    .text.HAL_ETH_MspDeInit:00000058 $d
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:356    .RxArraySection:00000000 Rx_Buff
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:370    .TxDecripSection:00000000 DMATxDscrTab
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:363    .RxDecripSection:00000000 DMARxDscrTab
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:353    .RxArraySection:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:359    .RxDecripSection:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:366    .TxDecripSection:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccZJNnUM.s:373    .rodata.MX_ETH_Init.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_ETH_Init
+memset
+_Error_Handler
+HAL_GPIO_Init
+HAL_GPIO_DeInit

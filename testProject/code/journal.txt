@@ -1,0 +1,2 @@
+1. test strncpy and memcpy in separate compilation units via extern global variable
+
