@@ -16,7 +16,7 @@
 /* Private variables ---------------------------------------------------------*/
 #define TIM2_CCR1_Address ((unsigned int)0x40000000 + 0x34)
 #define DMA_BUFFER_SIZE   61440
-#define SIZE 15360
+#define SIZE 512
 #define Destination_Address ((unsigned int)0x30000000)
 
 USBD_HandleTypeDef hUsbDeviceFS;
@@ -63,7 +63,6 @@ static void my_initGPIO(void);
 static void my_DMA_init(void);
 static void my_TIM2_initInputCaptureTimer(void);
 static void TIM6_myInit(void);
-static void TIM7_myInit(void);
 
 static void printArray(void);
 static void zeroArray(void);
@@ -85,12 +84,12 @@ int main(void)
 
   HAL_Init();
   
-  SCB_DisableICache();
-  SCB_DisableDCache();
-  /*SCB_InvalidateICache();
+  //SCB_DisableICache();
+  //SCB_DisableDCache();
+  SCB_InvalidateICache();
   SCB_InvalidateDCache();
   SCB_EnableICache();
-  SCB_EnableDCache();*/
+  SCB_EnableDCache();
 
   my_initClocks();
   my_initGPIO();
@@ -118,10 +117,10 @@ int main(void)
   unsigned int firstHalfDone = 0;
   while (1)
   {
-    if(!stopFlag) {
+    if(stopFlag < 20) {
       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
         
-        for(int i = 0; i < 2; ++i) {
+        for(int i = 0; i < DMA_BUFFER_SIZE/SIZE/2; ++i) {
           //SCB_InvalidateDCache();
           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
@@ -129,7 +128,7 @@ int main(void)
         
         while(!flipFlag);
         
-        for(int i = 2; i < 4; ++i) {
+        for(int i = DMA_BUFFER_SIZE/SIZE/2; i < DMA_BUFFER_SIZE/SIZE; ++i) {
           //SCB_InvalidateDCache();
           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
@@ -139,7 +138,7 @@ int main(void)
       }
     }
     
-    if(stopFlag) {
+    if(stopFlag == 20) {
       buffer[0] = 0x00646E65;
       CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned int));
       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
@@ -303,8 +302,8 @@ static void my_DMA_init(void) {
   DMA1_Stream0->CR |= (0x1 << 10);
   // set peripheral addres increment (disable)
   DMA1_Stream0->CR |= (0x0 << 9);
-  // set circular buffer mode (disable)
-  DMA1_Stream0->CR |= (0x0 << 8);
+  // set circular buffer mode (enable)
+  DMA1_Stream0->CR |= (0x1 << 8);
   // set data transfer direction (peripheral to memory)
   DMA1_Stream0->CR |= (0x0 << 6);
   // set transfer complete interrupt
@@ -329,9 +328,9 @@ static void TIM6_myInit(void) {
   // value timer count must reach before interrupt
   // now it should be approx (1 sec) (200Mhz apb1-timer clock / PSC / ARR = 1 Hz)
   // WARNING: -1 bcoz of the counter architecture -> he make 0 to 10000 same for PSC
-  TIM6->ARR = 100 - 1;
+  TIM6->ARR = 10 - 1;
   // prescaler clock that divide APB1 timers clock
-  TIM6->PSC = 200 - 1;
+  TIM6->PSC = 25 - 1;
   // enable interrupt
   TIM6->DIER |= TIM_DIER_UIE | TIM_DIER_UDE;
    // enable interrupt request
@@ -342,27 +341,6 @@ static void TIM6_myInit(void) {
   TIM6->CR1 |= TIM_CR1_CEN;
 }
 
-
-// this part configurate TIM6 timer interrupt (TIM6_DAC_IRQHandler)
-static void TIM7_myInit(void) {
-  //printf("inside init \r\n");
-  // start sending CLOCK to TIM7
-  RCC->APB1LENR |= (1 << 5);
-  // value timer count must reach before interrupt
-  // now it should be approx (1 sec) (200Mhz apb1-timer clock / PSC / ARR = 1 Hz)
-  // WARNING: -1 bcoz of the counter architecture -> he make 0 to 10000 same for PSC
-  TIM7->ARR = 100 - 1;
-  // prescaler clock that divide APB1 timers clock
-  TIM7->PSC = 500 - 1;
-  // enable interrupt
-  //TIM7->DIER |= TIM_DIER_UIE | TIM_DIER_UDE;
-  // enable interrupt request
-  //NVIC_EnableIRQ(TIM7_DAC_IRQn);
-  // set priority 
-  //NVIC_SetPriority(TIM7_DAC_IRQn, 15);
-  // enable TIM6
-  TIM7->CR1 |= TIM_CR1_CEN;
-}
 
 // just clear array for easier visualization
 static void zeroArray(void) {
