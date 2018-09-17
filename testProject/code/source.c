@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
 
 int64_t GlobalCounterFrequency;
 
@@ -102,19 +103,24 @@ int main()
   LARGE_INTEGER CounterFrequencyResult;
   QueryPerformanceFrequency(&CounterFrequencyResult);
   GlobalCounterFrequency = CounterFrequencyResult.QuadPart;
-#define number_of_ccr 15360
-  unsigned int lpBuffer[number_of_ccr] = {0};
-  unsigned long nNumberOfBytesToRead = number_of_ccr*4;
+#define number_of_ccr 1024
+  unsigned short int lpBuffer[number_of_ccr] = {0};
+  unsigned long nNumberOfBytesToRead = number_of_ccr*2;
   unsigned long lpNumberOfBytesRead;  
-  unsigned int counter = 0;
-  unsigned int error = 0;
+  unsigned int oldDelta = 0;
+  unsigned int Index = 0;
+  unsigned int delta = 0;
+  unsigned int box = 0;
+  unsigned int maxDelta = 0;
+  unsigned int TheLast = 0;
+  unsigned int TheNext = 0;
   
   QueryPerformanceCounter(&fullCounter);
   
   for(;;) {
     
     QueryPerformanceCounter(&startCounter);  
-    error = ReadFile(
+    ReadFile(
       hSerial,
       lpBuffer,
       nNumberOfBytesToRead,
@@ -130,6 +136,47 @@ int main()
       break;
     }
     else if(lpNumberOfBytesRead > 0) {
+      
+      Index = 0;
+      
+      if(lpBuffer[Index] > box) { 
+        oldDelta = lpBuffer[Index] - box;
+      }
+      else if(lpBuffer[Index] < box) {
+        oldDelta = (65536 - box + lpBuffer[Index]);
+      }
+      else {
+        fprintf(stderr, "something bad happens preload \n");
+      };
+      
+      while(Index < number_of_ccr-1) {
+        box = lpBuffer[Index++];
+        
+        if(lpBuffer[Index] > box) { 
+          delta = lpBuffer[Index] - box;
+        }
+        else if(lpBuffer[Index] < box) {
+          delta = (65536 - box + lpBuffer[Index]);
+        }
+        else {
+          fprintf(stderr, "something bad happens \n");
+        }
+        
+        if( abs(oldDelta - delta) > 10 ) {
+          //fprintf(stderr, "delta: %d -- old_delta: %d -- Index%d \n",
+          //        delta, oldDelta, Index);
+          oldDelta = delta;
+        }
+        // find maxDelta
+        if(maxDelta < delta) {
+          maxDelta = delta;
+          int a = 0;
+          TheLast = box;
+          TheNext = lpBuffer[Index];
+        }
+
+      }
+      box = lpBuffer[Index];
       
       // NOTE(Egor): succeed
       QueryPerformanceCounter(&endCounter);
@@ -152,6 +199,10 @@ int main()
   fprintf(stderr, "time: %f \n", time);
   
   fprintf(stderr, "full time: %f \n", fullTime);
+  
+  fprintf(stderr, "maxDelta: %d \n", maxDelta);
+  fprintf(stderr, "theLast: %d \n", TheLast);
+  fprintf(stderr, "theNext: %d \n", TheNext);
           
   
   // Close serial port

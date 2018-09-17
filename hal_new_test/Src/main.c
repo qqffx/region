@@ -16,13 +16,13 @@
 /* Private variables ---------------------------------------------------------*/
 #define TIM2_CCR1_Address ((unsigned int)0x40000000 + 0x34)
 #define DMA_BUFFER_SIZE   61440
-#define SIZE 512
+#define SIZE 1024
 #define Destination_Address ((unsigned int)0x30000000)
 
 USBD_HandleTypeDef hUsbDeviceFS;
 
 // TODO: why does this not zeroed array 
-unsigned int buffer[DMA_BUFFER_SIZE] __attribute__((section(".orbita_buffer")));
+unsigned short int buffer[DMA_BUFFER_SIZE] __attribute__((section(".orbita_buffer")));
 unsigned int bufferIndex = 0;
 unsigned int bufferValue = 0;
 
@@ -84,12 +84,12 @@ int main(void)
 
   HAL_Init();
   
-  //SCB_DisableICache();
-  //SCB_DisableDCache();
-  SCB_InvalidateICache();
+  SCB_DisableICache();
+  SCB_DisableDCache();
+  /*SCB_InvalidateICache();
   SCB_InvalidateDCache();
   SCB_EnableICache();
-  SCB_EnableDCache();
+  SCB_EnableDCache();*/
 
   my_initClocks();
   my_initGPIO();
@@ -99,6 +99,11 @@ int main(void)
   usbDevice = MX_USB_DEVICE_Init();
   
   zeroArray();
+  
+  printf("size of int %d \r\n", sizeof(int));
+  printf("size of short int %d \r\n", sizeof(short int));
+  printf("size of short %d \r\n", sizeof(short));
+  
   
   HAL_Delay(2000);  
   printf("waiting\r\n");  
@@ -117,12 +122,12 @@ int main(void)
   unsigned int firstHalfDone = 0;
   while (1)
   {
-    if(stopFlag < 20) {
+    if(stopFlag < 2) {
       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
         
         for(int i = 0; i < DMA_BUFFER_SIZE/SIZE/2; ++i) {
           //SCB_InvalidateDCache();
-          CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned int));
+          CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
         } // transfer via USB first half of buffer
         
@@ -130,7 +135,7 @@ int main(void)
         
         for(int i = DMA_BUFFER_SIZE/SIZE/2; i < DMA_BUFFER_SIZE/SIZE; ++i) {
           //SCB_InvalidateDCache();
-          CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned int));
+          CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
         } // transfer via USB first half of buffer
         stopFlag++;
@@ -138,9 +143,12 @@ int main(void)
       }
     }
     
-    if(stopFlag == 20) {
-      buffer[0] = 0x00646E65;
-      CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned int));
+    if(stopFlag == 2) {
+      // "end\0" flag
+      buffer[0] = 0x6E65;
+      buffer[1] = 0x0064;
+      buffer[2] = 0x0;
+      CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned short int));
       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
     }
       
@@ -245,6 +253,8 @@ static void my_TIM2_initInputCaptureTimer(void) {
   RCC->APB1LENR |= (0x1 << 0);
   // set prescaler to 200
   TIM2->PSC = 1 - 1;
+  // set Auto-Reload-Register to 16bit
+  TIM2->ARR = 65536-1;
   // choose TIM2_CH1 input
   TIM2->TISEL |= (0x0 << 0);
   // set channel 1 as input mapped on TI1
@@ -294,10 +304,10 @@ static void my_DMA_init(void) {
   DMAMUX1_Channel0->CCR |= 18U;
   // set DMA priority (very high)
   DMA1_Stream0->CR |= (0x3 << 16);
-  // set memory data size (32)
-  DMA1_Stream0->CR |= (0x2 << 13);
-  // set peripheral data size (32)
-  DMA1_Stream0->CR |= (0x2 << 11);
+  // set memory data size (16)
+  DMA1_Stream0->CR |= (0x1 << 13);
+  // set peripheral data size (16)
+  DMA1_Stream0->CR |= (0x1 << 11);
   // set memory addres increment  (enable)
   DMA1_Stream0->CR |= (0x1 << 10);
   // set peripheral addres increment (disable)
@@ -328,9 +338,9 @@ static void TIM6_myInit(void) {
   // value timer count must reach before interrupt
   // now it should be approx (1 sec) (200Mhz apb1-timer clock / PSC / ARR = 1 Hz)
   // WARNING: -1 bcoz of the counter architecture -> he make 0 to 10000 same for PSC
-  TIM6->ARR = 10 - 1;
+  TIM6->ARR = 100 - 1;
   // prescaler clock that divide APB1 timers clock
-  TIM6->PSC = 25 - 1;
+  TIM6->PSC = 400 - 1;
   // enable interrupt
   TIM6->DIER |= TIM_DIER_UIE | TIM_DIER_UDE;
    // enable interrupt request
