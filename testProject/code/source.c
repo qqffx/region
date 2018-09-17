@@ -102,7 +102,7 @@ int main()
   LARGE_INTEGER CounterFrequencyResult;
   QueryPerformanceFrequency(&CounterFrequencyResult);
   GlobalCounterFrequency = CounterFrequencyResult.QuadPart;
-#define number_of_ccr 1024
+#define number_of_ccr 15360
   unsigned int lpBuffer[number_of_ccr] = {0};
   unsigned long nNumberOfBytesToRead = number_of_ccr*4;
   unsigned long lpNumberOfBytesRead;  
@@ -129,7 +129,7 @@ int main()
       fprintf(stderr, "end flag was received\n");
       break;
     }
-    else if(lpNumberOfBytesRead == nNumberOfBytesToRead) {
+    else if(lpNumberOfBytesRead > 0) {
       
       // NOTE(Egor): succeed
       QueryPerformanceCounter(&endCounter);
@@ -138,12 +138,6 @@ int main()
       DWORD BytesWritten;
       // write data to file
       WriteFile(FileHandle, lpBuffer, lpNumberOfBytesRead, &BytesWritten, 0);
-      if(!(lpBuffer[0] % 1024)) {
-        fprintf(stderr, "bytes %d \r", lpBuffer[0]);
-      }
-    }
-    else if(lpNumberOfBytesRead < nNumberOfBytesToRead) {
-      fprintf(stderr, "bytes %d \n", lpNumberOfBytesRead);
     }
       
   }// for(;;)
