@@ -16,7 +16,8 @@
 /* Private variables ---------------------------------------------------------*/
 #define TIM2_CCR1_Address ((unsigned int)0x40000000 + 0x34)
 #define DMA_BUFFER_SIZE   61440
-#define SIZE 1024
+#define SIZE 15360
+#define NUMBER_OF_CYCLE 20
 #define Destination_Address ((unsigned int)0x30000000)
 
 USBD_HandleTypeDef hUsbDeviceFS;
@@ -63,6 +64,7 @@ static void my_initGPIO(void);
 static void my_DMA_init(void);
 static void my_TIM2_initInputCaptureTimer(void);
 static void TIM6_myInit(void);
+static void TIM3_myInit(void);
 
 static void printArray(void);
 static void zeroArray(void);
@@ -84,6 +86,8 @@ int main(void)
 
   HAL_Init();
   
+  SCB_InvalidateICache();
+  SCB_InvalidateDCache();
   SCB_DisableICache();
   SCB_DisableDCache();
   /*SCB_InvalidateICache();
@@ -100,11 +104,6 @@ int main(void)
   
   zeroArray();
   
-  printf("size of int %d \r\n", sizeof(int));
-  printf("size of short int %d \r\n", sizeof(short int));
-  printf("size of short %d \r\n", sizeof(short));
-  
-  
   HAL_Delay(2000);  
   printf("waiting\r\n");  
   while((strcmp(string, "send_data")) != 0);
@@ -112,8 +111,7 @@ int main(void)
   
   my_DMA_init();
   my_TIM2_initInputCaptureTimer();
-  //TIM7_myInit();
-  TIM6_myInit();
+  TIM3_myInit();
 
   
   unsigned int circ_buffer_ptr = 0;
@@ -122,11 +120,11 @@ int main(void)
   unsigned int firstHalfDone = 0;
   while (1)
   {
-    if(stopFlag < 2) {
+    if(stopFlag < NUMBER_OF_CYCLE) {
       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
         
         for(int i = 0; i < DMA_BUFFER_SIZE/SIZE/2; ++i) {
-          //SCB_InvalidateDCache();
+          SCB_CleanDCache();
           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
         } // transfer via USB first half of buffer
@@ -134,7 +132,7 @@ int main(void)
         while(!flipFlag);
         
         for(int i = DMA_BUFFER_SIZE/SIZE/2; i < DMA_BUFFER_SIZE/SIZE; ++i) {
-          //SCB_InvalidateDCache();
+          SCB_CleanDCache();
           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
         } // transfer via USB first half of buffer
@@ -143,8 +141,9 @@ int main(void)
       }
     }
     
-    if(stopFlag == 2) {
+    if(stopFlag == NUMBER_OF_CYCLE) {
       // "end\0" flag
+      TIM3->CR1 = 0;
       buffer[0] = 0x6E65;
       buffer[1] = 0x0064;
       buffer[2] = 0x0;
@@ -220,6 +219,7 @@ static void my_initGPIO(void) {
   // deactivate pin
   GPIOG->ODR &= ~(0x1 << 0);
   GPIOE->ODR &= ~(0x1 << 0);
+  
   // NOTE: config PA5-leg as input for InpCap TIM2
   // clear PA5 part of MODER register
   GPIOA->MODER &= ~(0x3 << 10);
@@ -231,6 +231,7 @@ static void my_initGPIO(void) {
   GPIOA->PUPDR &= ~(0x3 << 10);
   // config PA5 (VERY HIGH FREQ)
   GPIOA->OSPEEDR |= (0x3 << 10);
+  
   // NOTE: config PC13-leg as external interrupt for user button (blue button)
   // enable clock to SysCFG
   RCC->APB4ENR |= (0x1 << 1);
@@ -279,6 +280,51 @@ static void my_TIM2_initInputCaptureTimer(void) {
   // set priority
   // NVIC_SetPriority(TIM2_IRQn, 1);
 }
+
+// this part configurate TIM3 timer as output compare timer
+static void TIM3_myInit(void) {
+  
+  // NOTE: config PA6-leg as output for OutCap TIM3
+  // clear PA6 part of MODER register
+  GPIOA->MODER &= ~(0x3 << 12);
+  // put PA6 in alternate function mode
+  GPIOA->MODER |= (0x2 << 12);
+  // config PA6 for using (AF2 - TIM3_CH1)
+  GPIOA->AFR[0] |= (0x2 << 24);
+  // config PA6 (nopull)
+  GPIOA->PUPDR &= ~(0x3 << 12);
+  // config PA6 (VERY HIGH FREQ)
+  GPIOA->OSPEEDR |= (0x3 << 12);
+  
+  
+  // enable tim3
+  RCC->APB1LENR |= RCC_APB1LENR_TIM3EN;
+  // disable tim3 and clear control register
+  TIM3->CR1 = 0;
+  // clear CCER register NOTE: needed for writing into CCMR1 register
+  TIM3->CCER = 0;
+  // clear CCMR1 register and set CH1 as output (CC1S register)
+  TIM3->CCMR1 = 0;
+  // toggle pin on event
+  TIM3->CCMR1 |= (0x3 << 4);
+  // set AutoReloadRegister
+  TIM3->ARR = 10 - 1;
+  // set Prescaler value
+  TIM3->PSC = 25 - 1;
+  // reset registers WARNING: need for preloading PSC
+  TIM3->EGR |= (0x1 << 0);
+  // connect output pin to CH1
+  TIM3->CCER |= (0x1 << 0);
+  // enable TIM3
+  TIM3->CR1 = (0x1 << 0);
+  
+}
+  
+  
+  
+  
+  
+  
 
 static void my_DMA_init(void) {
   // enable DMA1 clocking
@@ -350,6 +396,8 @@ static void TIM6_myInit(void) {
   // enable TIM6
   TIM6->CR1 |= TIM_CR1_CEN;
 }
+
+
 
 
 // just clear array for easier visualization

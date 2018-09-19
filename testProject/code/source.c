@@ -12,6 +12,23 @@ inline float Win32GetSecondsElapsed(LARGE_INTEGER Start, LARGE_INTEGER End)
   return(Result);
 }
 
+typedef struct {
+  unsigned int delta;
+  unsigned int theLast;
+  unsigned int theNext;
+  unsigned int dataIndex;
+} debug_struct;
+
+
+inline void printDebug(debug_struct *debugStruct) {
+  
+  fprintf(stderr, "delta: %d | index: %x | last: %d | next %d \n",
+          debugStruct->delta,
+          (debugStruct->dataIndex - 1)*2,
+          debugStruct->theLast,
+          debugStruct->theNext);
+}
+
 LARGE_INTEGER startCounter, endCounter;
 LARGE_INTEGER fullCounter, fullCounterEnd;
 float time = 0;
@@ -87,6 +104,7 @@ int main()
     return 1;
   }   
   fprintf(stderr, "%d bytes written\n", bytes_written);
+  fprintf(stderr, "----------------\n", bytes_written);
 #endif
   char *Filename = "orbita_data.bin";
   
@@ -100,10 +118,13 @@ int main()
     // NOTE(Egor); fail
   }
   
+  debug_struct debugStruct = {0};
+    
+  
   LARGE_INTEGER CounterFrequencyResult;
   QueryPerformanceFrequency(&CounterFrequencyResult);
   GlobalCounterFrequency = CounterFrequencyResult.QuadPart;
-#define number_of_ccr 1024
+#define number_of_ccr 15360
   unsigned short int lpBuffer[number_of_ccr] = {0};
   unsigned long nNumberOfBytesToRead = number_of_ccr*2;
   unsigned long lpNumberOfBytesRead;  
@@ -111,9 +132,9 @@ int main()
   unsigned int Index = 0;
   unsigned int delta = 0;
   unsigned int box = 0;
-  unsigned int maxDelta = 0;
-  unsigned int TheLast = 0;
-  unsigned int TheNext = 0;
+  unsigned int dataIndex = 0;
+  unsigned int canonical_delta = 0;
+  char flag = 1;
   
   QueryPerformanceCounter(&fullCounter);
   
@@ -132,47 +153,65 @@ int main()
       CloseHandle(FileHandle);
       //char *copyString = "copy";
       //WriteFile(hSerial, copyString , strlen(copyString), &bytes_written, NULL);
-      fprintf(stderr, "end flag was received\n");
       break;
     }
     else if(lpNumberOfBytesRead > 0) {
       
-      Index = 0;
+      //calculate Delta 
+      
+      if(flag) {
+        
+        canonical_delta = lpBuffer[5] - lpBuffer[4];
+        flag = 0;
+        
+      }
       
       if(lpBuffer[Index] > box) { 
         oldDelta = lpBuffer[Index] - box;
+        dataIndex++;
       }
       else if(lpBuffer[Index] < box) {
         oldDelta = (65536 - box + lpBuffer[Index]);
+        dataIndex++;
       }
       else {
         fprintf(stderr, "something bad happens preload \n");
       };
+      
+      if(canonical_delta != delta) {
+        debugStruct.delta = oldDelta;
+        debugStruct.dataIndex = dataIndex;
+        debugStruct.theLast = box;
+        debugStruct.theNext = lpBuffer[Index];
+        
+        printDebug(&debugStruct);
+        
+      }
       
       while(Index < number_of_ccr-1) {
         box = lpBuffer[Index++];
         
         if(lpBuffer[Index] > box) { 
           delta = lpBuffer[Index] - box;
+          dataIndex++;
         }
         else if(lpBuffer[Index] < box) {
           delta = (65536 - box + lpBuffer[Index]);
+          dataIndex++;
         }
         else {
           fprintf(stderr, "something bad happens \n");
         }
         
-        if( abs(oldDelta - delta) > 10 ) {
-          //fprintf(stderr, "delta: %d -- old_delta: %d -- Index%d \n",
-          //        delta, oldDelta, Index);
-          oldDelta = delta;
-        }
         // find maxDelta
-        if(maxDelta < delta) {
-          maxDelta = delta;
-          int a = 0;
-          TheLast = box;
-          TheNext = lpBuffer[Index];
+        if(canonical_delta != delta) {
+          debugStruct.delta = delta;
+          debugStruct.dataIndex = dataIndex;
+          debugStruct.theLast = box;
+          debugStruct.theNext = lpBuffer[Index];
+          
+          printDebug(&debugStruct);
+          
         }
 
       }
@@ -196,13 +235,13 @@ int main()
   
   
   char DebugBuffer[256];
+  
+  fprintf(stderr, "delta: %d \n", canonical_delta);
   fprintf(stderr, "time: %f \n", time);
   
   fprintf(stderr, "full time: %f \n", fullTime);
   
-  fprintf(stderr, "maxDelta: %d \n", maxDelta);
-  fprintf(stderr, "theLast: %d \n", TheLast);
-  fprintf(stderr, "theNext: %d \n", TheNext);
+
           
   
   // Close serial port
