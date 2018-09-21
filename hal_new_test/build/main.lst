@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 1
 
 
    1              		.cpu cortex-m7
@@ -44,7 +44,7 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   17:Src/main.c    **** #define TIM2_CCR1_Address ((unsigned int)0x40000000 + 0x34)
   18:Src/main.c    **** #define DMA_BUFFER_SIZE   61440
   19:Src/main.c    **** #define SIZE 15360
-  20:Src/main.c    **** #define NUMBER_OF_CYCLE 20
+  20:Src/main.c    **** #define NUMBER_OF_CYCLE 12
   21:Src/main.c    **** #define Destination_Address ((unsigned int)0x30000000)
   22:Src/main.c    **** 
   23:Src/main.c    **** USBD_HandleTypeDef hUsbDeviceFS;
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   31:Src/main.c    **** typedef struct {
   32:Src/main.c    ****   unsigned int NDTR;
   33:Src/main.c    ****   unsigned int circBufferCounter;
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 2
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 2
 
 
   34:Src/main.c    ****   unsigned int dmaFlag;
@@ -111,330 +111,328 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   81:Src/main.c    ****   *
   82:Src/main.c    ****   * @retval None
   83:Src/main.c    ****   */
-  84:Src/main.c    **** int main(void)
-  85:Src/main.c    **** {
-  86:Src/main.c    **** 
-  87:Src/main.c    ****   HAL_Init();
-  88:Src/main.c    ****   
-  89:Src/main.c    ****   SCB_InvalidateICache();
-  90:Src/main.c    ****   SCB_InvalidateDCache();
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 3
+  84:Src/main.c    **** 
+  85:Src/main.c    **** int main(void)
+  86:Src/main.c    **** {
+  87:Src/main.c    **** 
+  88:Src/main.c    ****   HAL_Init();
+  89:Src/main.c    ****   
+  90:Src/main.c    ****   SCB_InvalidateICache();
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 3
 
 
-  91:Src/main.c    ****   SCB_DisableICache();
-  92:Src/main.c    ****   SCB_DisableDCache();
-  93:Src/main.c    ****   /*SCB_InvalidateICache();
-  94:Src/main.c    ****   SCB_InvalidateDCache();
-  95:Src/main.c    ****   SCB_EnableICache();
-  96:Src/main.c    ****   SCB_EnableDCache();*/
-  97:Src/main.c    **** 
-  98:Src/main.c    ****   my_initClocks();
-  99:Src/main.c    ****   my_initGPIO();
- 100:Src/main.c    ****   
- 101:Src/main.c    ****   MX_ETH_Init();
- 102:Src/main.c    ****   MX_USART3_UART_Init();
- 103:Src/main.c    ****   usbDevice = MX_USB_DEVICE_Init();
- 104:Src/main.c    ****   
- 105:Src/main.c    ****   zeroArray();
- 106:Src/main.c    ****   
- 107:Src/main.c    ****   HAL_Delay(2000);  
- 108:Src/main.c    ****   printf("waiting\r\n");  
- 109:Src/main.c    ****   while((strcmp(string, "send_data")) != 0);
- 110:Src/main.c    ****   printf("start \r\n");  
- 111:Src/main.c    ****   
- 112:Src/main.c    ****   my_DMA_init();
- 113:Src/main.c    ****   my_TIM2_initInputCaptureTimer();
- 114:Src/main.c    ****   TIM3_myInit();
- 115:Src/main.c    **** 
- 116:Src/main.c    ****   
- 117:Src/main.c    ****   unsigned int circ_buffer_ptr = 0;
- 118:Src/main.c    ****   unsigned int counter = 0;
- 119:Src/main.c    ****   unsigned int stopFlag = 0;
- 120:Src/main.c    ****   unsigned int firstHalfDone = 0;
- 121:Src/main.c    ****   while (1)
- 122:Src/main.c    ****   {
- 123:Src/main.c    ****     if(stopFlag < NUMBER_OF_CYCLE) {
- 124:Src/main.c    ****       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
- 125:Src/main.c    ****         
- 126:Src/main.c    ****         for(int i = 0; i < DMA_BUFFER_SIZE/SIZE/2; ++i) {
- 127:Src/main.c    ****           SCB_CleanDCache();
- 128:Src/main.c    ****           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
- 129:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 130:Src/main.c    ****         } // transfer via USB first half of buffer
+  91:Src/main.c    ****   SCB_InvalidateDCache();
+  92:Src/main.c    ****   SCB_DisableICache();
+  93:Src/main.c    ****   SCB_DisableDCache();
+  94:Src/main.c    ****   /*SCB_InvalidateICache();
+  95:Src/main.c    ****   SCB_InvalidateDCache();
+  96:Src/main.c    ****   SCB_EnableICache();
+  97:Src/main.c    ****   SCB_EnableDCache();*/
+  98:Src/main.c    **** 
+  99:Src/main.c    ****   my_initClocks();
+ 100:Src/main.c    ****   my_initGPIO();
+ 101:Src/main.c    ****   
+ 102:Src/main.c    ****   MX_ETH_Init();
+ 103:Src/main.c    ****   MX_USART3_UART_Init();
+ 104:Src/main.c    ****   usbDevice = MX_USB_DEVICE_Init();
+ 105:Src/main.c    ****   
+ 106:Src/main.c    ****   zeroArray();
+ 107:Src/main.c    ****   
+ 108:Src/main.c    ****   HAL_Delay(2000);  
+ 109:Src/main.c    ****   printf("waiting\r\n");  
+ 110:Src/main.c    ****   while((strcmp(string, "send_data")) != 0);
+ 111:Src/main.c    ****   printf("start \r\n");  
+ 112:Src/main.c    ****   
+ 113:Src/main.c    ****   my_DMA_init();
+ 114:Src/main.c    ****   my_TIM2_initInputCaptureTimer();
+ 115:Src/main.c    ****   TIM3_myInit();
+ 116:Src/main.c    **** 
+ 117:Src/main.c    ****   
+ 118:Src/main.c    ****   unsigned int stopFlag = 0;
+ 119:Src/main.c    ****   while (1)
+ 120:Src/main.c    ****   {
+ 121:Src/main.c    ****     if(stopFlag < NUMBER_OF_CYCLE) {
+ 122:Src/main.c    ****       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
+ 123:Src/main.c    ****         
+ 124:Src/main.c    ****         for(int i = 0; i < DMA_BUFFER_SIZE/SIZE/2; ++i) {
+ 125:Src/main.c    ****           SCB_CleanDCache();
+ 126:Src/main.c    ****           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
+ 127:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 128:Src/main.c    ****         } // transfer via USB first half of buffer
+ 129:Src/main.c    ****         
+ 130:Src/main.c    ****         while(!flipFlag);
  131:Src/main.c    ****         
- 132:Src/main.c    ****         while(!flipFlag);
- 133:Src/main.c    ****         
- 134:Src/main.c    ****         for(int i = DMA_BUFFER_SIZE/SIZE/2; i < DMA_BUFFER_SIZE/SIZE; ++i) {
- 135:Src/main.c    ****           SCB_CleanDCache();
- 136:Src/main.c    ****           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
- 137:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 138:Src/main.c    ****         } // transfer via USB first half of buffer
- 139:Src/main.c    ****         stopFlag++;
- 140:Src/main.c    ****         
- 141:Src/main.c    ****       }
- 142:Src/main.c    ****     }
- 143:Src/main.c    ****     
- 144:Src/main.c    ****     if(stopFlag == NUMBER_OF_CYCLE) {
- 145:Src/main.c    ****       // "end\0" flag
- 146:Src/main.c    ****       TIM3->CR1 = 0;
- 147:Src/main.c    ****       buffer[0] = 0x6E65;
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 4
+ 132:Src/main.c    ****         for(int i = DMA_BUFFER_SIZE/SIZE/2; i < DMA_BUFFER_SIZE/SIZE; ++i) {
+ 133:Src/main.c    ****           SCB_CleanDCache();
+ 134:Src/main.c    ****           CDC_Transmit_FS(buffer+SIZE*i, SIZE*sizeof(unsigned short int));
+ 135:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 136:Src/main.c    ****         } // transfer via USB first half of buffer
+ 137:Src/main.c    ****         stopFlag++;
+ 138:Src/main.c    ****         
+ 139:Src/main.c    ****       }
+ 140:Src/main.c    ****     }
+ 141:Src/main.c    ****     
+ 142:Src/main.c    ****     if(stopFlag == NUMBER_OF_CYCLE) {
+ 143:Src/main.c    ****       // "end\0" flag
+ 144:Src/main.c    ****       TIM3->CR1 = 0;
+ 145:Src/main.c    ****       buffer[0] = 0x6E65;
+ 146:Src/main.c    ****       buffer[1] = 0x0064;
+ 147:Src/main.c    ****       buffer[2] = 0x0;
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 4
 
 
- 148:Src/main.c    ****       buffer[1] = 0x0064;
- 149:Src/main.c    ****       buffer[2] = 0x0;
- 150:Src/main.c    ****       CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned short int));
- 151:Src/main.c    ****       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 152:Src/main.c    ****     }
- 153:Src/main.c    ****       
- 154:Src/main.c    ****     
- 155:Src/main.c    ****   }// while
- 156:Src/main.c    **** }// main
- 157:Src/main.c    **** 
- 158:Src/main.c    **** void TIM2_IRQHandler(void) {
- 159:Src/main.c    ****   
- 160:Src/main.c    ****   // reset interrupt flag
- 161:Src/main.c    ****   TIM2->SR = 0;
- 162:Src/main.c    ****   //GPIOB->ODR ^= (0x1 << 7);
- 163:Src/main.c    ****   
- 164:Src/main.c    ****   //tick = systick_ms;
- 165:Src/main.c    ****   //flag++;
- 166:Src/main.c    **** }
- 167:Src/main.c    **** 
- 168:Src/main.c    **** void DMA1_Stream0_IRQHandler(void) {
- 169:Src/main.c    ****   
- 170:Src/main.c    ****   // clear interrupt flag
- 171:Src/main.c    ****   DMA1->LIFCR |= (0x1 << 3) | (0x1 << 5);
- 172:Src/main.c    ****   //TIM6->CR1 &= ~(0x1);
- 173:Src/main.c    ****   GPIOB->ODR |= (0x1 << 7);
- 174:Src/main.c    ****   dmaFlag++;
- 175:Src/main.c    ****   flipFlag++;
- 176:Src/main.c    ****   
- 177:Src/main.c    **** }
- 178:Src/main.c    **** 
- 179:Src/main.c    **** void TIM6_DAC_IRQHandler(void) {
- 180:Src/main.c    ****   // reset interrupt flag
- 181:Src/main.c    ****   TIM6->SR &= ~(0x1 << 0);
- 182:Src/main.c    ****   
- 183:Src/main.c    ****   //buffer[bufferIndex] = TIM2->CNT;
- 184:Src/main.c    ****   //bufferValue += 5;
- 185:Src/main.c    ****   //bufferIndex = (++bufferIndex)%DMA_BUFFER_SIZE;
- 186:Src/main.c    ****   // toggle pin
- 187:Src/main.c    ****   GPIOG->ODR ^= (0x1 << 0);
- 188:Src/main.c    **** }
- 189:Src/main.c    **** 
- 190:Src/main.c    **** 
- 191:Src/main.c    **** static void my_initGPIO(void) {
-  26              		.loc 1 191 0
+ 148:Src/main.c    ****       CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned short int));
+ 149:Src/main.c    ****       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 150:Src/main.c    ****     }
+ 151:Src/main.c    ****       
+ 152:Src/main.c    ****     
+ 153:Src/main.c    ****   }// while
+ 154:Src/main.c    **** }// main
+ 155:Src/main.c    **** 
+ 156:Src/main.c    **** void TIM2_IRQHandler(void) {
+ 157:Src/main.c    ****   
+ 158:Src/main.c    ****   // reset interrupt flag
+ 159:Src/main.c    ****   TIM2->SR = 0;
+ 160:Src/main.c    ****   //GPIOB->ODR ^= (0x1 << 7);
+ 161:Src/main.c    ****   
+ 162:Src/main.c    ****   //tick = systick_ms;
+ 163:Src/main.c    ****   //flag++;
+ 164:Src/main.c    **** }
+ 165:Src/main.c    **** 
+ 166:Src/main.c    **** void DMA1_Stream0_IRQHandler(void) {
+ 167:Src/main.c    ****   
+ 168:Src/main.c    ****   // clear interrupt flag
+ 169:Src/main.c    ****   DMA1->LIFCR |= (0x1 << 3) | (0x1 << 5);
+ 170:Src/main.c    ****   //TIM6->CR1 &= ~(0x1);
+ 171:Src/main.c    ****   GPIOB->ODR |= (0x1 << 7);
+ 172:Src/main.c    ****   dmaFlag++;
+ 173:Src/main.c    ****   flipFlag++;
+ 174:Src/main.c    ****   
+ 175:Src/main.c    **** }
+ 176:Src/main.c    **** 
+ 177:Src/main.c    **** void TIM6_DAC_IRQHandler(void) {
+ 178:Src/main.c    ****   // reset interrupt flag
+ 179:Src/main.c    ****   TIM6->SR &= ~(0x1 << 0);
+ 180:Src/main.c    ****   
+ 181:Src/main.c    ****   //buffer[bufferIndex] = TIM2->CNT;
+ 182:Src/main.c    ****   //bufferValue += 5;
+ 183:Src/main.c    ****   //bufferIndex = (++bufferIndex)%DMA_BUFFER_SIZE;
+ 184:Src/main.c    ****   // toggle pin
+ 185:Src/main.c    ****   GPIOG->ODR ^= (0x1 << 0);
+ 186:Src/main.c    **** }
+ 187:Src/main.c    **** 
+ 188:Src/main.c    **** 
+ 189:Src/main.c    **** static void my_initGPIO(void) {
+  26              		.loc 1 189 0
   27              		.cfi_startproc
   28              		@ args = 0, pretend = 0, frame = 0
   29              		@ frame_needed = 0, uses_anonymous_args = 0
   30              		@ link register save eliminated.
- 192:Src/main.c    ****   // GPIO initialization
- 193:Src/main.c    ****   // WARNING idk why but if deactivate some of them USB stop work, even if
- 194:Src/main.c    ****   // designated pins (overcurrent\power_switch) still active
- 195:Src/main.c    ****   RCC->AHB4ENR |= (1 << 0);
-  31              		.loc 1 195 0
+ 190:Src/main.c    ****   // GPIO initialization
+ 191:Src/main.c    ****   // WARNING idk why but if deactivate some of them USB stop work, even if
+ 192:Src/main.c    ****   // designated pins (overcurrent\power_switch) still active
+ 193:Src/main.c    ****   RCC->AHB4ENR |= (1 << 0);
+  31              		.loc 1 193 0
   32 0000 4C4B     		ldr	r3, .L2
   33 0002 D3F8E020 		ldr	r2, [r3, #224]
   34 0006 42F00102 		orr	r2, r2, #1
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 5
-
-
   35 000a C3F8E020 		str	r2, [r3, #224]
- 196:Src/main.c    ****   RCC->AHB4ENR |= (1 << 1);
-  36              		.loc 1 196 0
+ 194:Src/main.c    ****   RCC->AHB4ENR |= (1 << 1);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 5
+
+
+  36              		.loc 1 194 0
   37 000e D3F8E020 		ldr	r2, [r3, #224]
   38 0012 42F00202 		orr	r2, r2, #2
   39 0016 C3F8E020 		str	r2, [r3, #224]
- 197:Src/main.c    ****   RCC->AHB4ENR |= (1 << 2);
-  40              		.loc 1 197 0
+ 195:Src/main.c    ****   RCC->AHB4ENR |= (1 << 2);
+  40              		.loc 1 195 0
   41 001a D3F8E020 		ldr	r2, [r3, #224]
   42 001e 42F00402 		orr	r2, r2, #4
   43 0022 C3F8E020 		str	r2, [r3, #224]
- 198:Src/main.c    ****   RCC->AHB4ENR |= (1 << 3);
-  44              		.loc 1 198 0
+ 196:Src/main.c    ****   RCC->AHB4ENR |= (1 << 3);
+  44              		.loc 1 196 0
   45 0026 D3F8E020 		ldr	r2, [r3, #224]
   46 002a 42F00802 		orr	r2, r2, #8
   47 002e C3F8E020 		str	r2, [r3, #224]
- 199:Src/main.c    ****   RCC->AHB4ENR |= (1 << 4);
-  48              		.loc 1 199 0
+ 197:Src/main.c    ****   RCC->AHB4ENR |= (1 << 4);
+  48              		.loc 1 197 0
   49 0032 D3F8E020 		ldr	r2, [r3, #224]
   50 0036 42F01002 		orr	r2, r2, #16
   51 003a C3F8E020 		str	r2, [r3, #224]
- 200:Src/main.c    ****   RCC->AHB4ENR |= (1 << 6);
-  52              		.loc 1 200 0
+ 198:Src/main.c    ****   RCC->AHB4ENR |= (1 << 6);
+  52              		.loc 1 198 0
   53 003e D3F8E020 		ldr	r2, [r3, #224]
   54 0042 42F04002 		orr	r2, r2, #64
   55 0046 C3F8E020 		str	r2, [r3, #224]
- 201:Src/main.c    ****   RCC->AHB4ENR |= (1 << 7);  
-  56              		.loc 1 201 0
+ 199:Src/main.c    ****   RCC->AHB4ENR |= (1 << 7);  
+  56              		.loc 1 199 0
   57 004a D3F8E020 		ldr	r2, [r3, #224]
   58 004e 42F08002 		orr	r2, r2, #128
   59 0052 C3F8E020 		str	r2, [r3, #224]
- 202:Src/main.c    ****   // configurate Blue_LD pin
- 203:Src/main.c    ****   GPIOB->MODER &= ~(0x2 << 14);
-  60              		.loc 1 203 0
+ 200:Src/main.c    ****   // configurate Blue_LD pin
+ 201:Src/main.c    ****   GPIOB->MODER &= ~(0x2 << 14);
+  60              		.loc 1 201 0
   61 0056 384A     		ldr	r2, .L2+4
   62 0058 1168     		ldr	r1, [r2]
   63 005a 21F40041 		bic	r1, r1, #32768
   64 005e 1160     		str	r1, [r2]
- 204:Src/main.c    ****   // configurate Red_LD pin
- 205:Src/main.c    ****   GPIOB->MODER &= ~(0x2 << 28);
-  65              		.loc 1 205 0
+ 202:Src/main.c    ****   // configurate Red_LD pin
+ 203:Src/main.c    ****   GPIOB->MODER &= ~(0x2 << 28);
+  65              		.loc 1 203 0
   66 0060 1168     		ldr	r1, [r2]
   67 0062 21F00051 		bic	r1, r1, #536870912
   68 0066 1160     		str	r1, [r2]
- 206:Src/main.c    ****   // configurate toggle pin for INP/CAP
- 207:Src/main.c    ****   GPIOG->MODER &= ~(0x2 << 0);
-  69              		.loc 1 207 0
+ 204:Src/main.c    ****   // configurate toggle pin for INP/CAP
+ 205:Src/main.c    ****   GPIOG->MODER &= ~(0x2 << 0);
+  69              		.loc 1 205 0
   70 0068 02F5A052 		add	r2, r2, #5120
   71 006c 1168     		ldr	r1, [r2]
   72 006e 21F00201 		bic	r1, r1, #2
   73 0072 1160     		str	r1, [r2]
- 208:Src/main.c    ****   // configurate external LD pin
- 209:Src/main.c    ****   GPIOE->MODER &= ~(0x2 << 0);
-  74              		.loc 1 209 0
+ 206:Src/main.c    ****   // configurate external LD pin
+ 207:Src/main.c    ****   GPIOE->MODER &= ~(0x2 << 0);
+  74              		.loc 1 207 0
   75 0074 3149     		ldr	r1, .L2+8
   76 0076 0868     		ldr	r0, [r1]
   77 0078 20F00200 		bic	r0, r0, #2
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 6
-
-
   78 007c 0860     		str	r0, [r1]
- 210:Src/main.c    ****   // Usb powerSwitch ON pin (reset)
- 211:Src/main.c    ****   GPIOG->ODR &= ~(0x1 << 6);
-  79              		.loc 1 211 0
+ 208:Src/main.c    ****   // Usb powerSwitch ON pin (reset)
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 6
+
+
+ 209:Src/main.c    ****   GPIOG->ODR &= ~(0x1 << 6);
+  79              		.loc 1 209 0
   80 007e 5069     		ldr	r0, [r2, #20]
   81 0080 20F04000 		bic	r0, r0, #64
   82 0084 5061     		str	r0, [r2, #20]
- 212:Src/main.c    ****   // configure usb power switch on PIT
- 213:Src/main.c    ****   GPIOG->MODER &= ~(0x2 << 12);
-  83              		.loc 1 213 0
+ 210:Src/main.c    ****   // configure usb power switch on PIT
+ 211:Src/main.c    ****   GPIOG->MODER &= ~(0x2 << 12);
+  83              		.loc 1 211 0
   84 0086 1068     		ldr	r0, [r2]
   85 0088 20F40050 		bic	r0, r0, #8192
   86 008c 1060     		str	r0, [r2]
- 214:Src/main.c    ****   GPIOG->PUPDR &= ~(0x3 << 12);
-  87              		.loc 1 214 0
+ 212:Src/main.c    ****   GPIOG->PUPDR &= ~(0x3 << 12);
+  87              		.loc 1 212 0
   88 008e D068     		ldr	r0, [r2, #12]
   89 0090 20F44050 		bic	r0, r0, #12288
   90 0094 D060     		str	r0, [r2, #12]
- 215:Src/main.c    ****   GPIOG->OSPEEDR &= ~(0x3 << 12);
-  91              		.loc 1 215 0
+ 213:Src/main.c    ****   GPIOG->OSPEEDR &= ~(0x3 << 12);
+  91              		.loc 1 213 0
   92 0096 9068     		ldr	r0, [r2, #8]
   93 0098 20F44050 		bic	r0, r0, #12288
   94 009c 9060     		str	r0, [r2, #8]
- 216:Src/main.c    ****   // configure usb overcurrent pin
- 217:Src/main.c    ****   GPIOG->MODER &= ~(0x3 << 14);
-  95              		.loc 1 217 0
+ 214:Src/main.c    ****   // configure usb overcurrent pin
+ 215:Src/main.c    ****   GPIOG->MODER &= ~(0x3 << 14);
+  95              		.loc 1 215 0
   96 009e 1068     		ldr	r0, [r2]
   97 00a0 20F44040 		bic	r0, r0, #49152
   98 00a4 1060     		str	r0, [r2]
- 218:Src/main.c    ****   GPIOG->PUPDR &= ~(0x3 << 14);
-  99              		.loc 1 218 0
+ 216:Src/main.c    ****   GPIOG->PUPDR &= ~(0x3 << 14);
+  99              		.loc 1 216 0
  100 00a6 D068     		ldr	r0, [r2, #12]
  101 00a8 20F44040 		bic	r0, r0, #49152
  102 00ac D060     		str	r0, [r2, #12]
- 219:Src/main.c    ****   // deactivate pin
- 220:Src/main.c    ****   GPIOG->ODR &= ~(0x1 << 0);
- 103              		.loc 1 220 0
+ 217:Src/main.c    ****   // deactivate pin
+ 218:Src/main.c    ****   GPIOG->ODR &= ~(0x1 << 0);
+ 103              		.loc 1 218 0
  104 00ae 5069     		ldr	r0, [r2, #20]
  105 00b0 20F00100 		bic	r0, r0, #1
  106 00b4 5061     		str	r0, [r2, #20]
- 221:Src/main.c    ****   GPIOE->ODR &= ~(0x1 << 0);
- 107              		.loc 1 221 0
+ 219:Src/main.c    ****   GPIOE->ODR &= ~(0x1 << 0);
+ 107              		.loc 1 219 0
  108 00b6 4A69     		ldr	r2, [r1, #20]
  109 00b8 22F00102 		bic	r2, r2, #1
  110 00bc 4A61     		str	r2, [r1, #20]
- 222:Src/main.c    ****   
- 223:Src/main.c    ****   // NOTE: config PA5-leg as input for InpCap TIM2
- 224:Src/main.c    ****   // clear PA5 part of MODER register
- 225:Src/main.c    ****   GPIOA->MODER &= ~(0x3 << 10);
- 111              		.loc 1 225 0
+ 220:Src/main.c    ****   
+ 221:Src/main.c    ****   // NOTE: config PA5-leg as input for InpCap TIM2
+ 222:Src/main.c    ****   // clear PA5 part of MODER register
+ 223:Src/main.c    ****   GPIOA->MODER &= ~(0x3 << 10);
+ 111              		.loc 1 223 0
  112 00be 204A     		ldr	r2, .L2+12
  113 00c0 1168     		ldr	r1, [r2]
  114 00c2 21F44061 		bic	r1, r1, #3072
  115 00c6 1160     		str	r1, [r2]
- 226:Src/main.c    ****   // put PA5 in alternate function mode
- 227:Src/main.c    ****   GPIOA->MODER |= (0x2 << 10);
- 116              		.loc 1 227 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 7
-
-
+ 224:Src/main.c    ****   // put PA5 in alternate function mode
+ 225:Src/main.c    ****   GPIOA->MODER |= (0x2 << 10);
+ 116              		.loc 1 225 0
  117 00c8 1168     		ldr	r1, [r2]
  118 00ca 41F40061 		orr	r1, r1, #2048
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 7
+
+
  119 00ce 1160     		str	r1, [r2]
- 228:Src/main.c    ****   // config PA5 for using (AF1 - TIM2_CH1)
- 229:Src/main.c    ****   GPIOA->AFR[0] |= (0x1 << 20);
- 120              		.loc 1 229 0
+ 226:Src/main.c    ****   // config PA5 for using (AF1 - TIM2_CH1)
+ 227:Src/main.c    ****   GPIOA->AFR[0] |= (0x1 << 20);
+ 120              		.loc 1 227 0
  121 00d0 116A     		ldr	r1, [r2, #32]
  122 00d2 41F48011 		orr	r1, r1, #1048576
  123 00d6 1162     		str	r1, [r2, #32]
- 230:Src/main.c    ****   // config PA5 (nopull)
- 231:Src/main.c    ****   GPIOA->PUPDR &= ~(0x3 << 10);
- 124              		.loc 1 231 0
+ 228:Src/main.c    ****   // config PA5 (nopull)
+ 229:Src/main.c    ****   GPIOA->PUPDR &= ~(0x3 << 10);
+ 124              		.loc 1 229 0
  125 00d8 D168     		ldr	r1, [r2, #12]
  126 00da 21F44061 		bic	r1, r1, #3072
  127 00de D160     		str	r1, [r2, #12]
- 232:Src/main.c    ****   // config PA5 (VERY HIGH FREQ)
- 233:Src/main.c    ****   GPIOA->OSPEEDR |= (0x3 << 10);
- 128              		.loc 1 233 0
+ 230:Src/main.c    ****   // config PA5 (VERY HIGH FREQ)
+ 231:Src/main.c    ****   GPIOA->OSPEEDR |= (0x3 << 10);
+ 128              		.loc 1 231 0
  129 00e0 9168     		ldr	r1, [r2, #8]
  130 00e2 41F44061 		orr	r1, r1, #3072
  131 00e6 9160     		str	r1, [r2, #8]
- 234:Src/main.c    ****   
- 235:Src/main.c    ****   // NOTE: config PC13-leg as external interrupt for user button (blue button)
- 236:Src/main.c    ****   // enable clock to SysCFG
- 237:Src/main.c    ****   RCC->APB4ENR |= (0x1 << 1);
- 132              		.loc 1 237 0
+ 232:Src/main.c    ****   
+ 233:Src/main.c    ****   // NOTE: config PC13-leg as external interrupt for user button (blue button)
+ 234:Src/main.c    ****   // enable clock to SysCFG
+ 235:Src/main.c    ****   RCC->APB4ENR |= (0x1 << 1);
+ 132              		.loc 1 235 0
  133 00e8 D3F8F420 		ldr	r2, [r3, #244]
  134 00ec 42F00202 		orr	r2, r2, #2
  135 00f0 C3F8F420 		str	r2, [r3, #244]
- 238:Src/main.c    ****   // config pin as input
- 239:Src/main.c    ****   GPIOC->MODER &= ~(0x3 << 26);
- 136              		.loc 1 239 0
+ 236:Src/main.c    ****   // config pin as input
+ 237:Src/main.c    ****   GPIOC->MODER &= ~(0x3 << 26);
+ 136              		.loc 1 237 0
  137 00f4 A3F57053 		sub	r3, r3, #15360
  138 00f8 1A68     		ldr	r2, [r3]
  139 00fa 22F04062 		bic	r2, r2, #201326592
  140 00fe 1A60     		str	r2, [r3]
- 240:Src/main.c    ****   // set PC13 pin as source of External Interrupt
- 241:Src/main.c    ****   SYSCFG->EXTICR[3] |= (0x2 << 4);
- 141              		.loc 1 241 0
+ 238:Src/main.c    ****   // set PC13 pin as source of External Interrupt
+ 239:Src/main.c    ****   SYSCFG->EXTICR[3] |= (0x2 << 4);
+ 141              		.loc 1 239 0
  142 0100 1049     		ldr	r1, .L2+16
  143 0102 4A69     		ldr	r2, [r1, #20]
  144 0104 42F02002 		orr	r2, r2, #32
  145 0108 4A61     		str	r2, [r1, #20]
- 242:Src/main.c    ****   // enable interrupt generation to PC13 leg via masking
- 243:Src/main.c    ****   EXTI_D1->IMR1 |= (0x1 << 13);
- 146              		.loc 1 243 0
+ 240:Src/main.c    ****   // enable interrupt generation to PC13 leg via masking
+ 241:Src/main.c    ****   EXTI_D1->IMR1 |= (0x1 << 13);
+ 146              		.loc 1 241 0
  147 010a A1F56071 		sub	r1, r1, #896
  148 010e 0A68     		ldr	r2, [r1]
  149 0110 42F40052 		orr	r2, r2, #8192
  150 0114 0A60     		str	r2, [r1]
- 244:Src/main.c    ****   // use (Rising edge) for PC13 event generation -> clear Falling edge register
- 245:Src/main.c    ****   EXTI->FTSR1 &= ~(0x1 << 13);
- 151              		.loc 1 245 0
+ 242:Src/main.c    ****   // use (Rising edge) for PC13 event generation -> clear Falling edge register
+ 243:Src/main.c    ****   EXTI->FTSR1 &= ~(0x1 << 13);
+ 151              		.loc 1 243 0
  152 0116 4FF0B042 		mov	r2, #1476395008
  153 011a 5168     		ldr	r1, [r2, #4]
  154 011c 21F40051 		bic	r1, r1, #8192
  155 0120 5160     		str	r1, [r2, #4]
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 8
+ 244:Src/main.c    ****   // use (Rising edge) for PC13
+ 245:Src/main.c    ****   EXTI->RTSR1 |= (0x1 << 13);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 8
 
 
- 246:Src/main.c    ****   // use (Rising edge) for PC13
- 247:Src/main.c    ****   EXTI->RTSR1 |= (0x1 << 13);
- 156              		.loc 1 247 0
+ 156              		.loc 1 245 0
  157 0122 1168     		ldr	r1, [r2]
  158 0124 41F40051 		orr	r1, r1, #8192
  159 0128 1160     		str	r1, [r2]
- 248:Src/main.c    ****   // config PC13 (NOPULL)
- 249:Src/main.c    ****   GPIOC->PUPDR &= ~(0x3 << 26);
- 160              		.loc 1 249 0
+ 246:Src/main.c    ****   // config PC13 (NOPULL)
+ 247:Src/main.c    ****   GPIOC->PUPDR &= ~(0x3 << 26);
+ 160              		.loc 1 247 0
  161 012a DA68     		ldr	r2, [r3, #12]
  162 012c 22F04062 		bic	r2, r2, #201326592
  163 0130 DA60     		str	r2, [r3, #12]
- 250:Src/main.c    **** }
- 164              		.loc 1 250 0
+ 248:Src/main.c    **** }
+ 164              		.loc 1 248 0
  165 0132 7047     		bx	lr
  166              	.L3:
  167              		.align	2
@@ -454,99 +452,99 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  182              		.fpu fpv5-d16
  184              	my_TIM2_initInputCaptureTimer:
  185              	.LFB142:
- 251:Src/main.c    **** 
- 252:Src/main.c    **** static void my_TIM2_initInputCaptureTimer(void) {
- 186              		.loc 1 252 0
+ 249:Src/main.c    **** 
+ 250:Src/main.c    **** static void my_TIM2_initInputCaptureTimer(void) {
+ 186              		.loc 1 250 0
  187              		.cfi_startproc
  188              		@ args = 0, pretend = 0, frame = 0
  189              		@ frame_needed = 0, uses_anonymous_args = 0
  190              		@ link register save eliminated.
- 253:Src/main.c    ****   // enable clock source for timer
- 254:Src/main.c    ****   RCC->APB1LENR |= (0x1 << 0);
- 191              		.loc 1 254 0
+ 251:Src/main.c    ****   // enable clock source for timer
+ 252:Src/main.c    ****   RCC->APB1LENR |= (0x1 << 0);
+ 191              		.loc 1 252 0
  192 0000 184A     		ldr	r2, .L5
  193 0002 D2F8E830 		ldr	r3, [r2, #232]
  194 0006 43F00103 		orr	r3, r3, #1
  195 000a C2F8E830 		str	r3, [r2, #232]
- 255:Src/main.c    ****   // set prescaler to 200
- 256:Src/main.c    ****   TIM2->PSC = 1 - 1;
- 196              		.loc 1 256 0
+ 253:Src/main.c    ****   // set prescaler to 200
+ 254:Src/main.c    ****   TIM2->PSC = 1 - 1;
+ 196              		.loc 1 254 0
  197 000e 4FF08043 		mov	r3, #1073741824
  198 0012 0022     		movs	r2, #0
  199 0014 1A85     		strh	r2, [r3, #40]	@ movhi
- 257:Src/main.c    ****   // set Auto-Reload-Register to 16bit
- 258:Src/main.c    ****   TIM2->ARR = 65536-1;
- 200              		.loc 1 258 0
+ 255:Src/main.c    ****   // set Auto-Reload-Register to 16bit
+ 256:Src/main.c    ****   TIM2->ARR = 65536-1;
+ 200              		.loc 1 256 0
  201 0016 4FF6FF72 		movw	r2, #65535
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 9
-
-
  202 001a DA62     		str	r2, [r3, #44]
- 259:Src/main.c    ****   // choose TIM2_CH1 input
- 260:Src/main.c    ****   TIM2->TISEL |= (0x0 << 0);
- 203              		.loc 1 260 0
+ 257:Src/main.c    ****   // choose TIM2_CH1 input
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 9
+
+
+ 258:Src/main.c    ****   TIM2->TISEL |= (0x0 << 0);
+ 203              		.loc 1 258 0
  204 001c 9A6E     		ldr	r2, [r3, #104]
  205 001e 9A66     		str	r2, [r3, #104]
- 261:Src/main.c    ****   // set channel 1 as input mapped on TI1
- 262:Src/main.c    ****   TIM2->CCMR1 |= (0x1 << 0);
- 206              		.loc 1 262 0
+ 259:Src/main.c    ****   // set channel 1 as input mapped on TI1
+ 260:Src/main.c    ****   TIM2->CCMR1 |= (0x1 << 0);
+ 206              		.loc 1 260 0
  207 0020 9A69     		ldr	r2, [r3, #24]
  208 0022 42F00102 		orr	r2, r2, #1
  209 0026 9A61     		str	r2, [r3, #24]
- 263:Src/main.c    ****   // digital filter length (0)
- 264:Src/main.c    ****   TIM2->CCMR1 |= (0x0 << 4);
- 210              		.loc 1 264 0
+ 261:Src/main.c    ****   // digital filter length (0)
+ 262:Src/main.c    ****   TIM2->CCMR1 |= (0x0 << 4);
+ 210              		.loc 1 262 0
  211 0028 9A69     		ldr	r2, [r3, #24]
  212 002a 9A61     		str	r2, [r3, #24]
- 265:Src/main.c    ****   // rising & falling edge
- 266:Src/main.c    ****   TIM2->CCER |= (0x1 << 1);
- 213              		.loc 1 266 0
+ 263:Src/main.c    ****   // rising & falling edge
+ 264:Src/main.c    ****   TIM2->CCER |= (0x1 << 1);
+ 213              		.loc 1 264 0
  214 002c 1A6A     		ldr	r2, [r3, #32]
  215 002e 42F00202 		orr	r2, r2, #2
  216 0032 1A62     		str	r2, [r3, #32]
- 267:Src/main.c    ****   TIM2->CCER |= (0x1 << 3);
- 217              		.loc 1 267 0
+ 265:Src/main.c    ****   TIM2->CCER |= (0x1 << 3);
+ 217              		.loc 1 265 0
  218 0034 1A6A     		ldr	r2, [r3, #32]
  219 0036 42F00802 		orr	r2, r2, #8
  220 003a 1A62     		str	r2, [r3, #32]
- 268:Src/main.c    ****   // prescaler to (0)
- 269:Src/main.c    ****   TIM2->CCMR1 |= (0x0 << 2);
- 221              		.loc 1 269 0
+ 266:Src/main.c    ****   // prescaler to (0)
+ 267:Src/main.c    ****   TIM2->CCMR1 |= (0x0 << 2);
+ 221              		.loc 1 267 0
  222 003c 9A69     		ldr	r2, [r3, #24]
  223 003e 9A61     		str	r2, [r3, #24]
- 270:Src/main.c    ****   // enable DMA interrupt &  disable Capture/Compare interrupt
- 271:Src/main.c    ****   TIM2->DIER |= (0x1 << 9) | (0x0 << 1);
- 224              		.loc 1 271 0
+ 268:Src/main.c    ****   // enable DMA interrupt &  disable Capture/Compare interrupt
+ 269:Src/main.c    ****   TIM2->DIER |= (0x1 << 9) | (0x0 << 1);
+ 224              		.loc 1 269 0
  225 0040 DA68     		ldr	r2, [r3, #12]
  226 0042 42F40072 		orr	r2, r2, #512
  227 0046 DA60     		str	r2, [r3, #12]
- 272:Src/main.c    ****   // capture enabled
- 273:Src/main.c    ****   TIM2->CCER |= (0x1 << 0);
- 228              		.loc 1 273 0
+ 270:Src/main.c    ****   // capture enabled
+ 271:Src/main.c    ****   TIM2->CCER |= (0x1 << 0);
+ 228              		.loc 1 271 0
  229 0048 1A6A     		ldr	r2, [r3, #32]
  230 004a 42F00102 		orr	r2, r2, #1
  231 004e 1A62     		str	r2, [r3, #32]
- 274:Src/main.c    ****   // reset registers WARNING: need for preloading PSC  
- 275:Src/main.c    ****   TIM2->EGR |= (0x1 << 0);
- 232              		.loc 1 275 0
+ 272:Src/main.c    ****   // reset registers WARNING: need for preloading PSC  
+ 273:Src/main.c    ****   TIM2->EGR |= (0x1 << 0);
+ 232              		.loc 1 273 0
  233 0050 5A69     		ldr	r2, [r3, #20]
  234 0052 42F00102 		orr	r2, r2, #1
  235 0056 5A61     		str	r2, [r3, #20]
- 276:Src/main.c    ****   // enable TIM3 timer
- 277:Src/main.c    ****   TIM2->CR1 |= TIM_CR1_CEN;
- 236              		.loc 1 277 0
+ 274:Src/main.c    ****   // enable TIM3 timer
+ 275:Src/main.c    ****   TIM2->CR1 |= TIM_CR1_CEN;
+ 236              		.loc 1 275 0
  237 0058 1A88     		ldrh	r2, [r3]
  238 005a 42F00102 		orr	r2, r2, #1
  239 005e 1A80     		strh	r2, [r3]	@ movhi
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 10
+ 276:Src/main.c    ****   // enable interrupt request
+ 277:Src/main.c    ****   // NVIC_EnableIRQ(TIM2_IRQn);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 10
 
 
- 278:Src/main.c    ****   // enable interrupt request
- 279:Src/main.c    ****   // NVIC_EnableIRQ(TIM2_IRQn);
- 280:Src/main.c    ****   // set priority
- 281:Src/main.c    ****   // NVIC_SetPriority(TIM2_IRQn, 1);
- 282:Src/main.c    **** }
- 240              		.loc 1 282 0
+ 278:Src/main.c    ****   // set priority
+ 279:Src/main.c    ****   // NVIC_SetPriority(TIM2_IRQn, 1);
+ 280:Src/main.c    **** }
+ 240              		.loc 1 280 0
  241 0060 7047     		bx	lr
  242              	.L6:
  243 0062 00BF     		.align	2
@@ -562,112 +560,112 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  254              		.fpu fpv5-d16
  256              	TIM3_myInit:
  257              	.LFB143:
- 283:Src/main.c    **** 
- 284:Src/main.c    **** // this part configurate TIM3 timer as output compare timer
- 285:Src/main.c    **** static void TIM3_myInit(void) {
- 258              		.loc 1 285 0
+ 281:Src/main.c    **** 
+ 282:Src/main.c    **** // this part configurate TIM3 timer as output compare timer
+ 283:Src/main.c    **** static void TIM3_myInit(void) {
+ 258              		.loc 1 283 0
  259              		.cfi_startproc
  260              		@ args = 0, pretend = 0, frame = 0
  261              		@ frame_needed = 0, uses_anonymous_args = 0
  262              		@ link register save eliminated.
- 286:Src/main.c    ****   
- 287:Src/main.c    ****   // NOTE: config PA6-leg as output for OutCap TIM3
- 288:Src/main.c    ****   // clear PA6 part of MODER register
- 289:Src/main.c    ****   GPIOA->MODER &= ~(0x3 << 12);
- 263              		.loc 1 289 0
+ 284:Src/main.c    ****   
+ 285:Src/main.c    ****   // NOTE: config PA6-leg as output for OutCap TIM3
+ 286:Src/main.c    ****   // clear PA6 part of MODER register
+ 287:Src/main.c    ****   GPIOA->MODER &= ~(0x3 << 12);
+ 263              		.loc 1 287 0
  264 0000 194B     		ldr	r3, .L8
  265 0002 1A68     		ldr	r2, [r3]
  266 0004 22F44052 		bic	r2, r2, #12288
  267 0008 1A60     		str	r2, [r3]
- 290:Src/main.c    ****   // put PA6 in alternate function mode
- 291:Src/main.c    ****   GPIOA->MODER |= (0x2 << 12);
- 268              		.loc 1 291 0
+ 288:Src/main.c    ****   // put PA6 in alternate function mode
+ 289:Src/main.c    ****   GPIOA->MODER |= (0x2 << 12);
+ 268              		.loc 1 289 0
  269 000a 1A68     		ldr	r2, [r3]
  270 000c 42F40052 		orr	r2, r2, #8192
  271 0010 1A60     		str	r2, [r3]
- 292:Src/main.c    ****   // config PA6 for using (AF2 - TIM3_CH1)
- 293:Src/main.c    ****   GPIOA->AFR[0] |= (0x2 << 24);
- 272              		.loc 1 293 0
+ 290:Src/main.c    ****   // config PA6 for using (AF2 - TIM3_CH1)
+ 291:Src/main.c    ****   GPIOA->AFR[0] |= (0x2 << 24);
+ 272              		.loc 1 291 0
  273 0012 1A6A     		ldr	r2, [r3, #32]
  274 0014 42F00072 		orr	r2, r2, #33554432
  275 0018 1A62     		str	r2, [r3, #32]
- 294:Src/main.c    ****   // config PA6 (nopull)
- 295:Src/main.c    ****   GPIOA->PUPDR &= ~(0x3 << 12);
- 276              		.loc 1 295 0
+ 292:Src/main.c    ****   // config PA6 (nopull)
+ 293:Src/main.c    ****   GPIOA->PUPDR &= ~(0x3 << 12);
+ 276              		.loc 1 293 0
  277 001a DA68     		ldr	r2, [r3, #12]
  278 001c 22F44052 		bic	r2, r2, #12288
  279 0020 DA60     		str	r2, [r3, #12]
- 296:Src/main.c    ****   // config PA6 (VERY HIGH FREQ)
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 11
+ 294:Src/main.c    ****   // config PA6 (VERY HIGH FREQ)
+ 295:Src/main.c    ****   GPIOA->OSPEEDR |= (0x3 << 12);
+ 280              		.loc 1 295 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 11
 
 
- 297:Src/main.c    ****   GPIOA->OSPEEDR |= (0x3 << 12);
- 280              		.loc 1 297 0
  281 0022 9A68     		ldr	r2, [r3, #8]
  282 0024 42F44052 		orr	r2, r2, #12288
  283 0028 9A60     		str	r2, [r3, #8]
- 298:Src/main.c    ****   
- 299:Src/main.c    ****   
- 300:Src/main.c    ****   // enable tim3
- 301:Src/main.c    ****   RCC->APB1LENR |= RCC_APB1LENR_TIM3EN;
- 284              		.loc 1 301 0
+ 296:Src/main.c    ****   
+ 297:Src/main.c    ****   
+ 298:Src/main.c    ****   // enable tim3
+ 299:Src/main.c    ****   RCC->APB1LENR |= RCC_APB1LENR_TIM3EN;
+ 284              		.loc 1 299 0
  285 002a 104A     		ldr	r2, .L8+4
  286 002c D2F8E830 		ldr	r3, [r2, #232]
  287 0030 43F00203 		orr	r3, r3, #2
  288 0034 C2F8E830 		str	r3, [r2, #232]
- 302:Src/main.c    ****   // disable tim3 and clear control register
- 303:Src/main.c    ****   TIM3->CR1 = 0;
- 289              		.loc 1 303 0
+ 300:Src/main.c    ****   // disable tim3 and clear control register
+ 301:Src/main.c    ****   TIM3->CR1 = 0;
+ 289              		.loc 1 301 0
  290 0038 0D4B     		ldr	r3, .L8+8
  291 003a 0022     		movs	r2, #0
  292 003c 1A80     		strh	r2, [r3]	@ movhi
- 304:Src/main.c    ****   // clear CCER register NOTE: needed for writing into CCMR1 register
- 305:Src/main.c    ****   TIM3->CCER = 0;
- 293              		.loc 1 305 0
+ 302:Src/main.c    ****   // clear CCER register NOTE: needed for writing into CCMR1 register
+ 303:Src/main.c    ****   TIM3->CCER = 0;
+ 293              		.loc 1 303 0
  294 003e 1A62     		str	r2, [r3, #32]
- 306:Src/main.c    ****   // clear CCMR1 register and set CH1 as output (CC1S register)
- 307:Src/main.c    ****   TIM3->CCMR1 = 0;
- 295              		.loc 1 307 0
+ 304:Src/main.c    ****   // clear CCMR1 register and set CH1 as output (CC1S register)
+ 305:Src/main.c    ****   TIM3->CCMR1 = 0;
+ 295              		.loc 1 305 0
  296 0040 9A61     		str	r2, [r3, #24]
- 308:Src/main.c    ****   // toggle pin on event
- 309:Src/main.c    ****   TIM3->CCMR1 |= (0x3 << 4);
- 297              		.loc 1 309 0
+ 306:Src/main.c    ****   // toggle pin on event
+ 307:Src/main.c    ****   TIM3->CCMR1 |= (0x3 << 4);
+ 297              		.loc 1 307 0
  298 0042 9A69     		ldr	r2, [r3, #24]
  299 0044 42F03002 		orr	r2, r2, #48
  300 0048 9A61     		str	r2, [r3, #24]
- 310:Src/main.c    ****   // set AutoReloadRegister
- 311:Src/main.c    ****   TIM3->ARR = 10 - 1;
- 301              		.loc 1 311 0
+ 308:Src/main.c    ****   // set AutoReloadRegister
+ 309:Src/main.c    ****   TIM3->ARR = 10 - 1;
+ 301              		.loc 1 309 0
  302 004a 0922     		movs	r2, #9
  303 004c DA62     		str	r2, [r3, #44]
- 312:Src/main.c    ****   // set Prescaler value
- 313:Src/main.c    ****   TIM3->PSC = 25 - 1;
- 304              		.loc 1 313 0
+ 310:Src/main.c    ****   // set Prescaler value
+ 311:Src/main.c    ****   TIM3->PSC = 25 - 1;
+ 304              		.loc 1 311 0
  305 004e 1822     		movs	r2, #24
  306 0050 1A85     		strh	r2, [r3, #40]	@ movhi
- 314:Src/main.c    ****   // reset registers WARNING: need for preloading PSC
- 315:Src/main.c    ****   TIM3->EGR |= (0x1 << 0);
- 307              		.loc 1 315 0
+ 312:Src/main.c    ****   // reset registers WARNING: need for preloading PSC
+ 313:Src/main.c    ****   TIM3->EGR |= (0x1 << 0);
+ 307              		.loc 1 313 0
  308 0052 5A69     		ldr	r2, [r3, #20]
  309 0054 42F00102 		orr	r2, r2, #1
  310 0058 5A61     		str	r2, [r3, #20]
- 316:Src/main.c    ****   // connect output pin to CH1
- 317:Src/main.c    ****   TIM3->CCER |= (0x1 << 0);
- 311              		.loc 1 317 0
+ 314:Src/main.c    ****   // connect output pin to CH1
+ 315:Src/main.c    ****   TIM3->CCER |= (0x1 << 0);
+ 311              		.loc 1 315 0
  312 005a 1A6A     		ldr	r2, [r3, #32]
  313 005c 42F00102 		orr	r2, r2, #1
  314 0060 1A62     		str	r2, [r3, #32]
- 318:Src/main.c    ****   // enable TIM3
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 12
+ 316:Src/main.c    ****   // enable TIM3
+ 317:Src/main.c    ****   TIM3->CR1 = (0x1 << 0);
+ 315              		.loc 1 317 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 12
 
 
- 319:Src/main.c    ****   TIM3->CR1 = (0x1 << 0);
- 315              		.loc 1 319 0
  316 0062 0122     		movs	r2, #1
  317 0064 1A80     		strh	r2, [r3]	@ movhi
- 320:Src/main.c    ****   
- 321:Src/main.c    **** }
- 318              		.loc 1 321 0
+ 318:Src/main.c    ****   
+ 319:Src/main.c    **** }
+ 318              		.loc 1 319 0
  319 0066 7047     		bx	lr
  320              	.L9:
  321              		.align	2
@@ -685,125 +683,125 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  334              		.fpu fpv5-d16
  336              	zeroArray:
  337              	.LFB146:
+ 320:Src/main.c    ****   
+ 321:Src/main.c    ****   
  322:Src/main.c    ****   
  323:Src/main.c    ****   
  324:Src/main.c    ****   
  325:Src/main.c    ****   
- 326:Src/main.c    ****   
- 327:Src/main.c    ****   
- 328:Src/main.c    **** 
- 329:Src/main.c    **** static void my_DMA_init(void) {
- 330:Src/main.c    ****   // enable DMA1 clocking
- 331:Src/main.c    ****   RCC->AHB1ENR |= (0x1 << 0);
- 332:Src/main.c    ****   // clear EN bit to 0
- 333:Src/main.c    ****   DMA1_Stream0->CR &= ~(0x1 << 0);
- 334:Src/main.c    ****   // safeguard EN bit reset
- 335:Src/main.c    ****   while (DMA1_Stream0->CR & 0x1);
- 336:Src/main.c    ****   // check LISR HISR registers
- 337:Src/main.c    ****   if ((DMA1->HISR == 0) && (DMA1->LISR == 0))
- 338:Src/main.c    ****     printf("status registers is clear\r\n");
- 339:Src/main.c    ****   else
- 340:Src/main.c    ****     printf("status register is not clear -- DMA wont start\r\n");
- 341:Src/main.c    ****   // set peripheral addres
- 342:Src/main.c    ****   DMA1_Stream0->PAR = TIM2_CCR1_Address;
- 343:Src/main.c    ****   // set memory addres
- 344:Src/main.c    ****   //DMA1_Stream0->M0AR = Destination_Address;
- 345:Src/main.c    ****   DMA1_Stream0->M0AR = (unsigned int)buffer;
- 346:Src/main.c    ****   // set total number of data items
- 347:Src/main.c    ****   DMA1_Stream0->NDTR = DMA_BUFFER_SIZE;
- 348:Src/main.c    ****   // NOTE: configurate TIM2_CH1 interrupt route
- 349:Src/main.c    ****   // set DMAMUX to route request (TIM2_CH1)
- 350:Src/main.c    ****   DMAMUX1_Channel0->CCR |= 18U;
- 351:Src/main.c    ****   // set DMA priority (very high)
- 352:Src/main.c    ****   DMA1_Stream0->CR |= (0x3 << 16);
- 353:Src/main.c    ****   // set memory data size (16)
- 354:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 13);
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 13
+ 326:Src/main.c    **** 
+ 327:Src/main.c    **** static void my_DMA_init(void) {
+ 328:Src/main.c    ****   // enable DMA1 clocking
+ 329:Src/main.c    ****   RCC->AHB1ENR |= (0x1 << 0);
+ 330:Src/main.c    ****   // clear EN bit to 0
+ 331:Src/main.c    ****   DMA1_Stream0->CR &= ~(0x1 << 0);
+ 332:Src/main.c    ****   // safeguard EN bit reset
+ 333:Src/main.c    ****   while (DMA1_Stream0->CR & 0x1);
+ 334:Src/main.c    ****   // check LISR HISR registers
+ 335:Src/main.c    ****   if ((DMA1->HISR == 0) && (DMA1->LISR == 0))
+ 336:Src/main.c    ****     printf("status registers is clear\r\n");
+ 337:Src/main.c    ****   else
+ 338:Src/main.c    ****     printf("status register is not clear -- DMA wont start\r\n");
+ 339:Src/main.c    ****   // set peripheral addres
+ 340:Src/main.c    ****   DMA1_Stream0->PAR = TIM2_CCR1_Address;
+ 341:Src/main.c    ****   // set memory addres
+ 342:Src/main.c    ****   //DMA1_Stream0->M0AR = Destination_Address;
+ 343:Src/main.c    ****   DMA1_Stream0->M0AR = (unsigned int)buffer;
+ 344:Src/main.c    ****   // set total number of data items
+ 345:Src/main.c    ****   DMA1_Stream0->NDTR = DMA_BUFFER_SIZE;
+ 346:Src/main.c    ****   // NOTE: configurate TIM2_CH1 interrupt route
+ 347:Src/main.c    ****   // set DMAMUX to route request (TIM2_CH1)
+ 348:Src/main.c    ****   DMAMUX1_Channel0->CCR |= 18U;
+ 349:Src/main.c    ****   // set DMA priority (very high)
+ 350:Src/main.c    ****   DMA1_Stream0->CR |= (0x3 << 16);
+ 351:Src/main.c    ****   // set memory data size (16)
+ 352:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 13);
+ 353:Src/main.c    ****   // set peripheral data size (16)
+ 354:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 11);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 13
 
 
- 355:Src/main.c    ****   // set peripheral data size (16)
- 356:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 11);
- 357:Src/main.c    ****   // set memory addres increment  (enable)
- 358:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 10);
- 359:Src/main.c    ****   // set peripheral addres increment (disable)
- 360:Src/main.c    ****   DMA1_Stream0->CR |= (0x0 << 9);
- 361:Src/main.c    ****   // set circular buffer mode (enable)
- 362:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 8);
- 363:Src/main.c    ****   // set data transfer direction (peripheral to memory)
- 364:Src/main.c    ****   DMA1_Stream0->CR |= (0x0 << 6);
- 365:Src/main.c    ****   // set transfer complete interrupt
- 366:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 4);
- 367:Src/main.c    ****   // set transfer error interrupt
- 368:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 2);
- 369:Src/main.c    ****   // enable DMA1
- 370:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 0);
- 371:Src/main.c    ****   // enable IRQ
- 372:Src/main.c    ****   NVIC_EnableIRQ(DMA1_Stream0_IRQn);
- 373:Src/main.c    ****   NVIC_SetPriority(DMA1_Stream0_IRQn, 0);
- 374:Src/main.c    ****   printf("DMA1_Stream0 %lu \r\n", (DMA1_Stream0->CR & 0x1));
- 375:Src/main.c    ****   printf("DMA1_Stream0 CIRC %lu \r\n", (DMA1_Stream0->CR >> 8) & 0x1);
- 376:Src/main.c    **** }
- 377:Src/main.c    **** 
- 378:Src/main.c    **** 
- 379:Src/main.c    **** // this part configurate TIM6 timer interrupt (TIM6_DAC_IRQHandler)
- 380:Src/main.c    **** static void TIM6_myInit(void) {
- 381:Src/main.c    ****   //printf("inside init \r\n");
- 382:Src/main.c    ****   // start sending CLOCK to TIM6
- 383:Src/main.c    ****   RCC->APB1LENR |= (1 << 4);
- 384:Src/main.c    ****   // value timer count must reach before interrupt
- 385:Src/main.c    ****   // now it should be approx (1 sec) (200Mhz apb1-timer clock / PSC / ARR = 1 Hz)
- 386:Src/main.c    ****   // WARNING: -1 bcoz of the counter architecture -> he make 0 to 10000 same for PSC
- 387:Src/main.c    ****   TIM6->ARR = 100 - 1;
- 388:Src/main.c    ****   // prescaler clock that divide APB1 timers clock
- 389:Src/main.c    ****   TIM6->PSC = 400 - 1;
- 390:Src/main.c    ****   // enable interrupt
- 391:Src/main.c    ****   TIM6->DIER |= TIM_DIER_UIE | TIM_DIER_UDE;
- 392:Src/main.c    ****    // enable interrupt request
- 393:Src/main.c    ****   NVIC_EnableIRQ(TIM6_DAC_IRQn);
- 394:Src/main.c    ****   // set priority 
- 395:Src/main.c    ****   NVIC_SetPriority(TIM6_DAC_IRQn, 0);
- 396:Src/main.c    ****   // enable TIM6
- 397:Src/main.c    ****   TIM6->CR1 |= TIM_CR1_CEN;
- 398:Src/main.c    **** }
+ 355:Src/main.c    ****   // set memory addres increment  (enable)
+ 356:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 10);
+ 357:Src/main.c    ****   // set peripheral addres increment (disable)
+ 358:Src/main.c    ****   DMA1_Stream0->CR |= (0x0 << 9);
+ 359:Src/main.c    ****   // set circular buffer mode (enable)
+ 360:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 8);
+ 361:Src/main.c    ****   // set data transfer direction (peripheral to memory)
+ 362:Src/main.c    ****   DMA1_Stream0->CR |= (0x0 << 6);
+ 363:Src/main.c    ****   // set transfer complete interrupt
+ 364:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 4);
+ 365:Src/main.c    ****   // set transfer error interrupt
+ 366:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 2);
+ 367:Src/main.c    ****   // enable DMA1
+ 368:Src/main.c    ****   DMA1_Stream0->CR |= (0x1 << 0);
+ 369:Src/main.c    ****   // enable IRQ
+ 370:Src/main.c    ****   NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+ 371:Src/main.c    ****   NVIC_SetPriority(DMA1_Stream0_IRQn, 0);
+ 372:Src/main.c    ****   printf("DMA1_Stream0 %lu \r\n", (DMA1_Stream0->CR & 0x1));
+ 373:Src/main.c    ****   printf("DMA1_Stream0 CIRC %lu \r\n", (DMA1_Stream0->CR >> 8) & 0x1);
+ 374:Src/main.c    **** }
+ 375:Src/main.c    **** 
+ 376:Src/main.c    **** 
+ 377:Src/main.c    **** // this part configurate TIM6 timer interrupt (TIM6_DAC_IRQHandler)
+ 378:Src/main.c    **** static void TIM6_myInit(void) {
+ 379:Src/main.c    ****   //printf("inside init \r\n");
+ 380:Src/main.c    ****   // start sending CLOCK to TIM6
+ 381:Src/main.c    ****   RCC->APB1LENR |= (1 << 4);
+ 382:Src/main.c    ****   // value timer count must reach before interrupt
+ 383:Src/main.c    ****   // now it should be approx (1 sec) (200Mhz apb1-timer clock / PSC / ARR = 1 Hz)
+ 384:Src/main.c    ****   // WARNING: -1 bcoz of the counter architecture -> he make 0 to 10000 same for PSC
+ 385:Src/main.c    ****   TIM6->ARR = 100 - 1;
+ 386:Src/main.c    ****   // prescaler clock that divide APB1 timers clock
+ 387:Src/main.c    ****   TIM6->PSC = 400 - 1;
+ 388:Src/main.c    ****   // enable interrupt
+ 389:Src/main.c    ****   TIM6->DIER |= TIM_DIER_UIE | TIM_DIER_UDE;
+ 390:Src/main.c    ****    // enable interrupt request
+ 391:Src/main.c    ****   NVIC_EnableIRQ(TIM6_DAC_IRQn);
+ 392:Src/main.c    ****   // set priority 
+ 393:Src/main.c    ****   NVIC_SetPriority(TIM6_DAC_IRQn, 0);
+ 394:Src/main.c    ****   // enable TIM6
+ 395:Src/main.c    ****   TIM6->CR1 |= TIM_CR1_CEN;
+ 396:Src/main.c    **** }
+ 397:Src/main.c    **** 
+ 398:Src/main.c    **** 
  399:Src/main.c    **** 
  400:Src/main.c    **** 
- 401:Src/main.c    **** 
- 402:Src/main.c    **** 
- 403:Src/main.c    **** // just clear array for easier visualization
- 404:Src/main.c    **** static void zeroArray(void) {
- 338              		.loc 1 404 0
+ 401:Src/main.c    **** // just clear array for easier visualization
+ 402:Src/main.c    **** static void zeroArray(void) {
+ 338              		.loc 1 402 0
  339              		.cfi_startproc
  340              		@ args = 0, pretend = 0, frame = 0
  341              		@ frame_needed = 0, uses_anonymous_args = 0
  342              		@ link register save eliminated.
  343              	.LVL0:
  344              	.LBB67:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 14
+ 403:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
+ 345              		.loc 1 403 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 14
 
 
- 405:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
- 345              		.loc 1 405 0
  346 0000 0023     		movs	r3, #0
  347 0002 03E0     		b	.L11
  348              	.LVL1:
  349              	.L12:
- 406:Src/main.c    ****     buffer[i] = i;
- 350              		.loc 1 406 0 discriminator 3
+ 404:Src/main.c    ****     buffer[i] = i;
+ 350              		.loc 1 404 0 discriminator 3
  351 0004 034A     		ldr	r2, .L13
  352 0006 22F81330 		strh	r3, [r2, r3, lsl #1]	@ movhi
- 405:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
- 353              		.loc 1 405 0 discriminator 3
+ 403:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
+ 353              		.loc 1 403 0 discriminator 3
  354 000a 0133     		adds	r3, r3, #1
  355              	.LVL2:
  356              	.L11:
- 405:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
- 357              		.loc 1 405 0 is_stmt 0 discriminator 1
+ 403:Src/main.c    ****   for(int i = 0; i < DMA_BUFFER_SIZE; ++i) {
+ 357              		.loc 1 403 0 is_stmt 0 discriminator 1
  358 000c B3F5704F 		cmp	r3, #61440
  359 0010 F8DB     		blt	.L12
  360              	.LBE67:
- 407:Src/main.c    ****   }
- 408:Src/main.c    **** }
- 361              		.loc 1 408 0 is_stmt 1
+ 405:Src/main.c    ****   }
+ 406:Src/main.c    **** }
+ 361              		.loc 1 406 0 is_stmt 1
  362 0012 7047     		bx	lr
  363              	.L14:
  364              		.align	2
@@ -819,366 +817,366 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  375              		.fpu fpv5-d16
  377              	my_initClocks:
  378              	.LFB153:
- 409:Src/main.c    **** 
- 410:Src/main.c    **** static void printDebugBuffer(void) {
- 411:Src/main.c    ****   printf("Debug Info: \r\n");
- 412:Src/main.c    ****   for(int i = 0; i < debugBufferLength; ++i) {
- 413:Src/main.c    ****     
- 414:Src/main.c    ****     if(!(i % 2)) {
- 415:Src/main.c    ****       printf("------------------------------ \r\n");
- 416:Src/main.c    ****     }
- 417:Src/main.c    ****     printf("NDTR: %u circBuffer %u dmaFlag: %u StartBufferEntry %10u \r\n",
- 418:Src/main.c    ****            debugBuffer[i].NDTR,
- 419:Src/main.c    ****            debugBuffer[i].circBufferCounter,
- 420:Src/main.c    ****            debugBuffer[i].dmaFlag,
- 421:Src/main.c    ****            debugBuffer[i].StartBufferEntry);
- 422:Src/main.c    ****   }
- 423:Src/main.c    ****   //printf("end \r\n");
- 424:Src/main.c    **** }
- 425:Src/main.c    **** 
- 426:Src/main.c    **** // print array in matrix like style
- 427:Src/main.c    **** static void printArray(void) {
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 15
+ 407:Src/main.c    **** 
+ 408:Src/main.c    **** static void printDebugBuffer(void) {
+ 409:Src/main.c    ****   printf("Debug Info: \r\n");
+ 410:Src/main.c    ****   for(int i = 0; i < debugBufferLength; ++i) {
+ 411:Src/main.c    ****     
+ 412:Src/main.c    ****     if(!(i % 2)) {
+ 413:Src/main.c    ****       printf("------------------------------ \r\n");
+ 414:Src/main.c    ****     }
+ 415:Src/main.c    ****     printf("NDTR: %u circBuffer %u dmaFlag: %u StartBufferEntry %10u \r\n",
+ 416:Src/main.c    ****            debugBuffer[i].NDTR,
+ 417:Src/main.c    ****            debugBuffer[i].circBufferCounter,
+ 418:Src/main.c    ****            debugBuffer[i].dmaFlag,
+ 419:Src/main.c    ****            debugBuffer[i].StartBufferEntry);
+ 420:Src/main.c    ****   }
+ 421:Src/main.c    ****   //printf("end \r\n");
+ 422:Src/main.c    **** }
+ 423:Src/main.c    **** 
+ 424:Src/main.c    **** // print array in matrix like style
+ 425:Src/main.c    **** static void printArray(void) {
+ 426:Src/main.c    ****   printf("buffer: \r\n");
+ 427:Src/main.c    ****   for(int i = 0; i < 1000; ++i) {
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 15
 
 
- 428:Src/main.c    ****   printf("buffer: \r\n");
- 429:Src/main.c    ****   for(int i = 0; i < 1000; ++i) {
- 430:Src/main.c    ****     printf(" %12u ", buffer[i]);
- 431:Src/main.c    ****     // new line every 10 outputs
- 432:Src/main.c    ****     if(!((i+1) % 4)) {
- 433:Src/main.c    ****       printf("\r\n");
- 434:Src/main.c    ****     }
- 435:Src/main.c    ****   }  
- 436:Src/main.c    **** }
- 437:Src/main.c    **** 
- 438:Src/main.c    **** static void writeFile(void) {
- 439:Src/main.c    ****   unsigned int circ_buffer_ptr = 0;
- 440:Src/main.c    ****   for(int i = 0; i < (DMA_BUFFER_SIZE/SIZE); ++i) {
- 441:Src/main.c    ****     CDC_Transmit_FS(buffer + circ_buffer_ptr, SIZE*sizeof(unsigned int));
- 442:Src/main.c    ****     circ_buffer_ptr = (circ_buffer_ptr + SIZE) % DMA_BUFFER_SIZE;
- 443:Src/main.c    ****     while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 444:Src/main.c    ****   }
- 445:Src/main.c    **** }// writeFile
- 446:Src/main.c    ****   
- 447:Src/main.c    **** 
- 448:Src/main.c    **** 
- 449:Src/main.c    **** /* USER CODE BEGIN 4 */
- 450:Src/main.c    **** int __io_putchar(int ch)
- 451:Src/main.c    **** {
- 452:Src/main.c    ****   uint8_t c[1];
- 453:Src/main.c    ****   c[0] = ch & 0x00FF;
- 454:Src/main.c    ****   HAL_UART_Transmit(&huart3, &c[0], 1, 10);
- 455:Src/main.c    ****   return ch;
- 456:Src/main.c    **** }
- 457:Src/main.c    **** 
- 458:Src/main.c    **** int _write(int file,char *ptr, int len)
- 459:Src/main.c    **** {
- 460:Src/main.c    ****   int DataIdx;
- 461:Src/main.c    ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
- 462:Src/main.c    ****   {
- 463:Src/main.c    ****     __io_putchar(*ptr++);
- 464:Src/main.c    ****   }
- 465:Src/main.c    ****   return len;
- 466:Src/main.c    **** }
+ 428:Src/main.c    ****     printf(" %12u ", buffer[i]);
+ 429:Src/main.c    ****     // new line every 10 outputs
+ 430:Src/main.c    ****     if(!((i+1) % 4)) {
+ 431:Src/main.c    ****       printf("\r\n");
+ 432:Src/main.c    ****     }
+ 433:Src/main.c    ****   }  
+ 434:Src/main.c    **** }
+ 435:Src/main.c    **** 
+ 436:Src/main.c    **** static void writeFile(void) {
+ 437:Src/main.c    ****   unsigned int circ_buffer_ptr = 0;
+ 438:Src/main.c    ****   for(int i = 0; i < (DMA_BUFFER_SIZE/SIZE); ++i) {
+ 439:Src/main.c    ****     CDC_Transmit_FS(buffer + circ_buffer_ptr, SIZE*sizeof(unsigned int));
+ 440:Src/main.c    ****     circ_buffer_ptr = (circ_buffer_ptr + SIZE) % DMA_BUFFER_SIZE;
+ 441:Src/main.c    ****     while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 442:Src/main.c    ****   }
+ 443:Src/main.c    **** }// writeFile
+ 444:Src/main.c    ****   
+ 445:Src/main.c    **** 
+ 446:Src/main.c    **** 
+ 447:Src/main.c    **** /* USER CODE BEGIN 4 */
+ 448:Src/main.c    **** int __io_putchar(int ch)
+ 449:Src/main.c    **** {
+ 450:Src/main.c    ****   uint8_t c[1];
+ 451:Src/main.c    ****   c[0] = ch & 0x00FF;
+ 452:Src/main.c    ****   HAL_UART_Transmit(&huart3, &c[0], 1, 10);
+ 453:Src/main.c    ****   return ch;
+ 454:Src/main.c    **** }
+ 455:Src/main.c    **** 
+ 456:Src/main.c    **** int _write(int file,char *ptr, int len)
+ 457:Src/main.c    **** {
+ 458:Src/main.c    ****   int DataIdx;
+ 459:Src/main.c    ****   for(DataIdx= 0; DataIdx< len; DataIdx++)
+ 460:Src/main.c    ****   {
+ 461:Src/main.c    ****     __io_putchar(*ptr++);
+ 462:Src/main.c    ****   }
+ 463:Src/main.c    ****   return len;
+ 464:Src/main.c    **** }
+ 465:Src/main.c    **** 
+ 466:Src/main.c    **** /* USER CODE END 4 */
  467:Src/main.c    **** 
- 468:Src/main.c    **** /* USER CODE END 4 */
- 469:Src/main.c    **** 
- 470:Src/main.c    **** /**
- 471:Src/main.c    ****   * @brief  This function is executed in case of error occurrence.
- 472:Src/main.c    ****   * @param  file: The file name as string.
- 473:Src/main.c    ****   * @param  line: The line in file as a number.
- 474:Src/main.c    ****   * @retval None
- 475:Src/main.c    ****   */
- 476:Src/main.c    **** void _Error_Handler(char *file, int line)
- 477:Src/main.c    **** {
- 478:Src/main.c    ****   /* USER CODE BEGIN Error_Handler_Debug */
- 479:Src/main.c    ****   /* User can add his own implementation to report the HAL error return state */
- 480:Src/main.c    ****   while(1)
- 481:Src/main.c    ****   {
- 482:Src/main.c    ****   }
- 483:Src/main.c    ****   /* USER CODE END Error_Handler_Debug */
- 484:Src/main.c    **** }
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 16
+ 468:Src/main.c    **** /**
+ 469:Src/main.c    ****   * @brief  This function is executed in case of error occurrence.
+ 470:Src/main.c    ****   * @param  file: The file name as string.
+ 471:Src/main.c    ****   * @param  line: The line in file as a number.
+ 472:Src/main.c    ****   * @retval None
+ 473:Src/main.c    ****   */
+ 474:Src/main.c    **** void _Error_Handler(char *file, int line)
+ 475:Src/main.c    **** {
+ 476:Src/main.c    ****   /* USER CODE BEGIN Error_Handler_Debug */
+ 477:Src/main.c    ****   /* User can add his own implementation to report the HAL error return state */
+ 478:Src/main.c    ****   while(1)
+ 479:Src/main.c    ****   {
+ 480:Src/main.c    ****   }
+ 481:Src/main.c    ****   /* USER CODE END Error_Handler_Debug */
+ 482:Src/main.c    **** }
+ 483:Src/main.c    **** 
+ 484:Src/main.c    **** #ifdef  USE_FULL_ASSERT
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 16
 
 
- 485:Src/main.c    **** 
- 486:Src/main.c    **** #ifdef  USE_FULL_ASSERT
- 487:Src/main.c    **** /**
- 488:Src/main.c    ****   * @brief  Reports the name of the source file and the source line number
- 489:Src/main.c    ****   *         where the assert_param error has occurred.
- 490:Src/main.c    ****   * @param  file: pointer to the source file name
- 491:Src/main.c    ****   * @param  line: assert_param error line source number
- 492:Src/main.c    ****   * @retval None
- 493:Src/main.c    ****   */
- 494:Src/main.c    **** void assert_failed(uint8_t* file, uint32_t line)
- 495:Src/main.c    **** { 
- 496:Src/main.c    ****   /* USER CODE BEGIN 6 */
- 497:Src/main.c    ****   /* User can add his own implementation to report the file name and line number,
- 498:Src/main.c    ****      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
- 499:Src/main.c    ****   /* USER CODE END 6 */
- 500:Src/main.c    **** }
- 501:Src/main.c    **** #endif /* USE_FULL_ASSERT */
- 502:Src/main.c    **** 
- 503:Src/main.c    **** /**
- 504:Src/main.c    ****   * @}
- 505:Src/main.c    ****   */
- 506:Src/main.c    **** 
- 507:Src/main.c    **** /**
- 508:Src/main.c    ****   * @}
- 509:Src/main.c    ****   */
- 510:Src/main.c    **** 
- 511:Src/main.c    **** /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
- 512:Src/main.c    **** /* USER CODE BEGIN 7 */
- 513:Src/main.c    **** // this config should get (400 Mhz) CPU clock from (8 Mhz Hse) RC oscillator
- 514:Src/main.c    **** void my_initClocks(void) {
- 379              		.loc 1 514 0
+ 485:Src/main.c    **** /**
+ 486:Src/main.c    ****   * @brief  Reports the name of the source file and the source line number
+ 487:Src/main.c    ****   *         where the assert_param error has occurred.
+ 488:Src/main.c    ****   * @param  file: pointer to the source file name
+ 489:Src/main.c    ****   * @param  line: assert_param error line source number
+ 490:Src/main.c    ****   * @retval None
+ 491:Src/main.c    ****   */
+ 492:Src/main.c    **** void assert_failed(uint8_t* file, uint32_t line)
+ 493:Src/main.c    **** { 
+ 494:Src/main.c    ****   /* USER CODE BEGIN 6 */
+ 495:Src/main.c    ****   /* User can add his own implementation to report the file name and line number,
+ 496:Src/main.c    ****      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+ 497:Src/main.c    ****   /* USER CODE END 6 */
+ 498:Src/main.c    **** }
+ 499:Src/main.c    **** #endif /* USE_FULL_ASSERT */
+ 500:Src/main.c    **** 
+ 501:Src/main.c    **** /**
+ 502:Src/main.c    ****   * @}
+ 503:Src/main.c    ****   */
+ 504:Src/main.c    **** 
+ 505:Src/main.c    **** /**
+ 506:Src/main.c    ****   * @}
+ 507:Src/main.c    ****   */
+ 508:Src/main.c    **** 
+ 509:Src/main.c    **** /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+ 510:Src/main.c    **** /* USER CODE BEGIN 7 */
+ 511:Src/main.c    **** // this config should get (400 Mhz) CPU clock from (8 Mhz Hse) RC oscillator
+ 512:Src/main.c    **** void my_initClocks(void) {
+ 379              		.loc 1 512 0
  380              		.cfi_startproc
  381              		@ args = 0, pretend = 0, frame = 0
  382              		@ frame_needed = 0, uses_anonymous_args = 0
  383              		@ link register save eliminated.
- 515:Src/main.c    ****   // WARNING: this is needed bcoz of high CPU freq
- 516:Src/main.c    ****   // set up power Level Scale 1
- 517:Src/main.c    ****   MODIFY_REG(PWR->CR3, PWR_CR3_SCUEN, 0);
- 384              		.loc 1 517 0
+ 513:Src/main.c    ****   // WARNING: this is needed bcoz of high CPU freq
+ 514:Src/main.c    ****   // set up power Level Scale 1
+ 515:Src/main.c    ****   MODIFY_REG(PWR->CR3, PWR_CR3_SCUEN, 0);
+ 384              		.loc 1 515 0
  385 0000 484B     		ldr	r3, .L20
  386 0002 DA68     		ldr	r2, [r3, #12]
  387 0004 22F00402 		bic	r2, r2, #4
  388 0008 DA60     		str	r2, [r3, #12]
- 518:Src/main.c    ****   PWR->D3CR |= (0x3 << 14);
- 389              		.loc 1 518 0
+ 516:Src/main.c    ****   PWR->D3CR |= (0x3 << 14);
+ 389              		.loc 1 516 0
  390 000a 9A69     		ldr	r2, [r3, #24]
  391 000c 42F44042 		orr	r2, r2, #49152
  392 0010 9A61     		str	r2, [r3, #24]
  393              	.L16:
- 519:Src/main.c    ****   // power level configuration safeguard
- 520:Src/main.c    ****   while ((PWR->D3CR & (PWR_D3CR_VOSRDY)) != PWR_D3CR_VOSRDY);
- 394              		.loc 1 520 0 discriminator 1
+ 517:Src/main.c    ****   // power level configuration safeguard
+ 518:Src/main.c    ****   while ((PWR->D3CR & (PWR_D3CR_VOSRDY)) != PWR_D3CR_VOSRDY);
+ 394              		.loc 1 518 0 discriminator 1
  395 0012 444B     		ldr	r3, .L20
  396 0014 9B69     		ldr	r3, [r3, #24]
  397 0016 13F4005F 		tst	r3, #8192
  398 001a FAD0     		beq	.L16
- 521:Src/main.c    ****   // Enable HSI48 for usb clocking
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 17
+ 519:Src/main.c    ****   // Enable HSI48 for usb clocking
+ 520:Src/main.c    ****   RCC->CR |= (0x1 << 12);
+ 399              		.loc 1 520 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 17
 
 
- 522:Src/main.c    ****   RCC->CR |= (0x1 << 12);
- 399              		.loc 1 522 0
  400 001c 424B     		ldr	r3, .L20+4
  401 001e 1A68     		ldr	r2, [r3]
  402 0020 42F48052 		orr	r2, r2, #4096
  403 0024 1A60     		str	r2, [r3]
- 523:Src/main.c    ****   // Enable HSE as Bypass RC-oscillator
- 524:Src/main.c    ****   // HSEBYP bit enabled
- 525:Src/main.c    ****   RCC->CR |= (1 << 18);
- 404              		.loc 1 525 0
+ 521:Src/main.c    ****   // Enable HSE as Bypass RC-oscillator
+ 522:Src/main.c    ****   // HSEBYP bit enabled
+ 523:Src/main.c    ****   RCC->CR |= (1 << 18);
+ 404              		.loc 1 523 0
  405 0026 1A68     		ldr	r2, [r3]
  406 0028 42F48022 		orr	r2, r2, #262144
  407 002c 1A60     		str	r2, [r3]
- 526:Src/main.c    ****   // HSEON bit enabled
- 527:Src/main.c    ****   RCC->CR |= (1 << 16);
- 408              		.loc 1 527 0
+ 524:Src/main.c    ****   // HSEON bit enabled
+ 525:Src/main.c    ****   RCC->CR |= (1 << 16);
+ 408              		.loc 1 525 0
  409 002e 1A68     		ldr	r2, [r3]
  410 0030 42F48032 		orr	r2, r2, #65536
  411 0034 1A60     		str	r2, [r3]
  412              	.L17:
- 528:Src/main.c    ****   // safeguard HSE
- 529:Src/main.c    ****   while(!(RCC->CR & (0x1 << 17)));
- 413              		.loc 1 529 0 discriminator 1
+ 526:Src/main.c    ****   // safeguard HSE
+ 527:Src/main.c    ****   while(!(RCC->CR & (0x1 << 17)));
+ 413              		.loc 1 527 0 discriminator 1
  414 0036 3C4B     		ldr	r3, .L20+4
  415 0038 1B68     		ldr	r3, [r3]
  416 003a 13F4003F 		tst	r3, #131072
  417 003e FAD0     		beq	.L17
- 530:Src/main.c    ****   // NOTE: for further configuration
- 531:Src/main.c    ****   // PLL OFF 
- 532:Src/main.c    ****   RCC->CR &= ~(RCC_CR_PLL1ON);
- 418              		.loc 1 532 0
+ 528:Src/main.c    ****   // NOTE: for further configuration
+ 529:Src/main.c    ****   // PLL OFF 
+ 530:Src/main.c    ****   RCC->CR &= ~(RCC_CR_PLL1ON);
+ 418              		.loc 1 530 0
  419 0040 394B     		ldr	r3, .L20+4
  420 0042 1A68     		ldr	r2, [r3]
  421 0044 22F08072 		bic	r2, r2, #16777216
  422 0048 1A60     		str	r2, [r3]
- 533:Src/main.c    ****   // set PLL1 source as (HSE)
- 534:Src/main.c    ****   RCC->PLLCKSELR |= (0x2 << 0);
- 423              		.loc 1 534 0
+ 531:Src/main.c    ****   // set PLL1 source as (HSE)
+ 532:Src/main.c    ****   RCC->PLLCKSELR |= (0x2 << 0);
+ 423              		.loc 1 532 0
  424 004a 9A6A     		ldr	r2, [r3, #40]
  425 004c 42F00202 		orr	r2, r2, #2
  426 0050 9A62     		str	r2, [r3, #40]
- 535:Src/main.c    ****   // set PLL1 prescaler to (1)
- 536:Src/main.c    ****   RCC->PLLCKSELR |= (0x1 << 4);
- 427              		.loc 1 536 0
+ 533:Src/main.c    ****   // set PLL1 prescaler to (1)
+ 534:Src/main.c    ****   RCC->PLLCKSELR |= (0x1 << 4);
+ 427              		.loc 1 534 0
  428 0052 9A6A     		ldr	r2, [r3, #40]
  429 0054 42F01002 		orr	r2, r2, #16
  430 0058 9A62     		str	r2, [r3, #40]
- 537:Src/main.c    ****   // set PLL1 multiplier to (100)
- 538:Src/main.c    ****   RCC->PLL1DIVR |= (0x64 << 0);
- 431              		.loc 1 538 0
+ 535:Src/main.c    ****   // set PLL1 multiplier to (100)
+ 536:Src/main.c    ****   RCC->PLL1DIVR |= (0x64 << 0);
+ 431              		.loc 1 536 0
  432 005a 1A6B     		ldr	r2, [r3, #48]
  433 005c 42F06402 		orr	r2, r2, #100
  434 0060 1A63     		str	r2, [r3, #48]
- 539:Src/main.c    ****   // set PLL1 DIVP1 to (2)
- 540:Src/main.c    ****   RCC->PLL1DIVR |= (0x1 << 9);
- 435              		.loc 1 540 0
+ 537:Src/main.c    ****   // set PLL1 DIVP1 to (2)
+ 538:Src/main.c    ****   RCC->PLL1DIVR |= (0x1 << 9);
+ 435              		.loc 1 538 0
  436 0062 1A6B     		ldr	r2, [r3, #48]
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 18
-
-
  437 0064 42F40072 		orr	r2, r2, #512
  438 0068 1A63     		str	r2, [r3, #48]
- 541:Src/main.c    ****   // set PLL1 DIVQ1 to (4)
- 542:Src/main.c    ****   RCC->PLL1DIVR |= (0x3 << 16);
- 439              		.loc 1 542 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 18
+
+
+ 539:Src/main.c    ****   // set PLL1 DIVQ1 to (4)
+ 540:Src/main.c    ****   RCC->PLL1DIVR |= (0x3 << 16);
+ 439              		.loc 1 540 0
  440 006a 1A6B     		ldr	r2, [r3, #48]
  441 006c 42F44032 		orr	r2, r2, #196608
  442 0070 1A63     		str	r2, [r3, #48]
- 543:Src/main.c    ****   // set PLL1 DIVR1 to (2)
- 544:Src/main.c    ****   RCC->PLL1DIVR |= (0x1 << 24);
- 443              		.loc 1 544 0
+ 541:Src/main.c    ****   // set PLL1 DIVR1 to (2)
+ 542:Src/main.c    ****   RCC->PLL1DIVR |= (0x1 << 24);
+ 443              		.loc 1 542 0
  444 0072 1A6B     		ldr	r2, [r3, #48]
  445 0074 42F08072 		orr	r2, r2, #16777216
  446 0078 1A63     		str	r2, [r3, #48]
- 545:Src/main.c    ****   // disable PLL1 FRACTION mode 
- 546:Src/main.c    ****   RCC->PLLCFGR &= ~(0x1 << 0);
- 447              		.loc 1 546 0
+ 543:Src/main.c    ****   // disable PLL1 FRACTION mode 
+ 544:Src/main.c    ****   RCC->PLLCFGR &= ~(0x1 << 0);
+ 447              		.loc 1 544 0
  448 007a DA6A     		ldr	r2, [r3, #44]
  449 007c 22F00102 		bic	r2, r2, #1
  450 0080 DA62     		str	r2, [r3, #44]
- 547:Src/main.c    ****   // set FRACN1 to (0)
- 548:Src/main.c    ****   RCC->PLL1FRACR = 0x0;
- 451              		.loc 1 548 0
+ 545:Src/main.c    ****   // set FRACN1 to (0)
+ 546:Src/main.c    ****   RCC->PLL1FRACR = 0x0;
+ 451              		.loc 1 546 0
  452 0082 0022     		movs	r2, #0
  453 0084 5A63     		str	r2, [r3, #52]
- 549:Src/main.c    ****   // set PLL input freq range to (8 - 16 Mhz)
- 550:Src/main.c    ****   RCC->PLLCFGR |= (0x3 << 2);
- 454              		.loc 1 550 0
+ 547:Src/main.c    ****   // set PLL input freq range to (8 - 16 Mhz)
+ 548:Src/main.c    ****   RCC->PLLCFGR |= (0x3 << 2);
+ 454              		.loc 1 548 0
  455 0086 DA6A     		ldr	r2, [r3, #44]
  456 0088 42F00C02 		orr	r2, r2, #12
  457 008c DA62     		str	r2, [r3, #44]
- 551:Src/main.c    ****   // set PLL VCO frequency range (wide -> 192 - 836 Mhz)
- 552:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 1);
- 458              		.loc 1 552 0
+ 549:Src/main.c    ****   // set PLL VCO frequency range (wide -> 192 - 836 Mhz)
+ 550:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 1);
+ 458              		.loc 1 550 0
  459 008e DA6A     		ldr	r2, [r3, #44]
  460 0090 42F00202 		orr	r2, r2, #2
  461 0094 DA62     		str	r2, [r3, #44]
- 553:Src/main.c    ****   // set PLL1_DIVP|DIVQ|DIVR enable
- 554:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 18) | (0x1 << 17) | (0x1 << 16);
- 462              		.loc 1 554 0
+ 551:Src/main.c    ****   // set PLL1_DIVP|DIVQ|DIVR enable
+ 552:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 18) | (0x1 << 17) | (0x1 << 16);
+ 462              		.loc 1 552 0
  463 0096 DA6A     		ldr	r2, [r3, #44]
  464 0098 42F4E022 		orr	r2, r2, #458752
  465 009c DA62     		str	r2, [r3, #44]
- 555:Src/main.c    ****   // enable PLL1 FRACTION mode 
- 556:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 0);
- 466              		.loc 1 556 0
+ 553:Src/main.c    ****   // enable PLL1 FRACTION mode 
+ 554:Src/main.c    ****   RCC->PLLCFGR |= (0x1 << 0);
+ 466              		.loc 1 554 0
  467 009e DA6A     		ldr	r2, [r3, #44]
  468 00a0 42F00102 		orr	r2, r2, #1
  469 00a4 DA62     		str	r2, [r3, #44]
- 557:Src/main.c    ****   // enable PLL1
- 558:Src/main.c    ****   RCC->CR |= (RCC_CR_PLL1ON);
- 470              		.loc 1 558 0
+ 555:Src/main.c    ****   // enable PLL1
+ 556:Src/main.c    ****   RCC->CR |= (RCC_CR_PLL1ON);
+ 470              		.loc 1 556 0
  471 00a6 1A68     		ldr	r2, [r3]
  472 00a8 42F08072 		orr	r2, r2, #16777216
  473 00ac 1A60     		str	r2, [r3]
  474              	.L18:
- 559:Src/main.c    ****   // safeguard PLL1
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 19
+ 557:Src/main.c    ****   // safeguard PLL1
+ 558:Src/main.c    ****   while(!(RCC->CR & (0x1 << 25)));
+ 475              		.loc 1 558 0 discriminator 1
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 19
 
 
- 560:Src/main.c    ****   while(!(RCC->CR & (0x1 << 25)));
- 475              		.loc 1 560 0 discriminator 1
  476 00ae 1E4B     		ldr	r3, .L20+4
  477 00b0 1B68     		ldr	r3, [r3]
  478 00b2 13F0007F 		tst	r3, #33554432
  479 00b6 FAD0     		beq	.L18
- 561:Src/main.c    ****   // WARNING should be matched with CPU speed 
- 562:Src/main.c    ****   // set FLASH Latency (wait 2) 
- 563:Src/main.c    ****   FLASH->ACR |= (0x2 << 0);
- 480              		.loc 1 563 0
+ 559:Src/main.c    ****   // WARNING should be matched with CPU speed 
+ 560:Src/main.c    ****   // set FLASH Latency (wait 2) 
+ 561:Src/main.c    ****   FLASH->ACR |= (0x2 << 0);
+ 480              		.loc 1 561 0
  481 00b8 1C4A     		ldr	r2, .L20+8
  482 00ba 1368     		ldr	r3, [r2]
  483 00bc 43F00203 		orr	r3, r3, #2
  484 00c0 1360     		str	r3, [r2]
- 564:Src/main.c    ****   // NOTE 0x8 -> 2, 0x9 -> 4 ... first bit of reg part should be 1
- 565:Src/main.c    ****   // set HPRE to (2) 
- 566:Src/main.c    ****   RCC->D1CFGR |= (0x8 << 0);
- 485              		.loc 1 566 0
+ 562:Src/main.c    ****   // NOTE 0x8 -> 2, 0x9 -> 4 ... first bit of reg part should be 1
+ 563:Src/main.c    ****   // set HPRE to (2) 
+ 564:Src/main.c    ****   RCC->D1CFGR |= (0x8 << 0);
+ 485              		.loc 1 564 0
  486 00c2 194B     		ldr	r3, .L20+4
  487 00c4 9A69     		ldr	r2, [r3, #24]
  488 00c6 42F00802 		orr	r2, r2, #8
  489 00ca 9A61     		str	r2, [r3, #24]
- 567:Src/main.c    ****   // set D1CPRE to (1)
- 568:Src/main.c    ****   RCC->D1CFGR |= (0x0 << 8);
- 490              		.loc 1 568 0
+ 565:Src/main.c    ****   // set D1CPRE to (1)
+ 566:Src/main.c    ****   RCC->D1CFGR |= (0x0 << 8);
+ 490              		.loc 1 566 0
  491 00cc 9A69     		ldr	r2, [r3, #24]
  492 00ce 9A61     		str	r2, [r3, #24]
  493              	.L19:
- 569:Src/main.c    ****   // NOTE: actually do not needed
- 570:Src/main.c    ****   // safeguard PLL1  
- 571:Src/main.c    ****   while(!(RCC->CR & (0x1 << 25)));
- 494              		.loc 1 571 0 discriminator 1
+ 567:Src/main.c    ****   // NOTE: actually do not needed
+ 568:Src/main.c    ****   // safeguard PLL1  
+ 569:Src/main.c    ****   while(!(RCC->CR & (0x1 << 25)));
+ 494              		.loc 1 569 0 discriminator 1
  495 00d0 154B     		ldr	r3, .L20+4
  496 00d2 1B68     		ldr	r3, [r3]
  497 00d4 13F0007F 		tst	r3, #33554432
  498 00d8 FAD0     		beq	.L19
- 572:Src/main.c    ****   // set D1PPRE to (2)
- 573:Src/main.c    ****   RCC->D1CFGR |= (0x4 << 4);
- 499              		.loc 1 573 0
+ 570:Src/main.c    ****   // set D1PPRE to (2)
+ 571:Src/main.c    ****   RCC->D1CFGR |= (0x4 << 4);
+ 499              		.loc 1 571 0
  500 00da 134B     		ldr	r3, .L20+4
  501 00dc 9A69     		ldr	r2, [r3, #24]
  502 00de 42F04002 		orr	r2, r2, #64
  503 00e2 9A61     		str	r2, [r3, #24]
- 574:Src/main.c    ****   // set D2PPRE1 to (2)
- 575:Src/main.c    ****   RCC->D2CFGR |= (0x4 << 4);
- 504              		.loc 1 575 0
+ 572:Src/main.c    ****   // set D2PPRE1 to (2)
+ 573:Src/main.c    ****   RCC->D2CFGR |= (0x4 << 4);
+ 504              		.loc 1 573 0
  505 00e4 DA69     		ldr	r2, [r3, #28]
  506 00e6 42F04002 		orr	r2, r2, #64
  507 00ea DA61     		str	r2, [r3, #28]
- 576:Src/main.c    ****   // set D2PPRE2 to (2)
- 577:Src/main.c    ****   RCC->D2CFGR |= (0x4 << 8);
- 508              		.loc 1 577 0
+ 574:Src/main.c    ****   // set D2PPRE2 to (2)
+ 575:Src/main.c    ****   RCC->D2CFGR |= (0x4 << 8);
+ 508              		.loc 1 575 0
  509 00ec DA69     		ldr	r2, [r3, #28]
  510 00ee 42F48062 		orr	r2, r2, #1024
  511 00f2 DA61     		str	r2, [r3, #28]
- 578:Src/main.c    ****   // set D3PPRE2 to (2)
- 579:Src/main.c    ****   RCC->D3CFGR |= (0x4 << 4);
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 20
-
-
- 512              		.loc 1 579 0
+ 576:Src/main.c    ****   // set D3PPRE2 to (2)
+ 577:Src/main.c    ****   RCC->D3CFGR |= (0x4 << 4);
+ 512              		.loc 1 577 0
  513 00f4 1A6A     		ldr	r2, [r3, #32]
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 20
+
+
  514 00f6 42F04002 		orr	r2, r2, #64
  515 00fa 1A62     		str	r2, [r3, #32]
- 580:Src/main.c    ****   // set PLL1 as (sysClk)
- 581:Src/main.c    ****   RCC->CFGR |= (0x3 << 0);
- 516              		.loc 1 581 0
+ 578:Src/main.c    ****   // set PLL1 as (sysClk)
+ 579:Src/main.c    ****   RCC->CFGR |= (0x3 << 0);
+ 516              		.loc 1 579 0
  517 00fc 1A69     		ldr	r2, [r3, #16]
  518 00fe 42F00302 		orr	r2, r2, #3
  519 0102 1A61     		str	r2, [r3, #16]
- 582:Src/main.c    ****   // set USART2/3/4/5/7/8 clockw as (rcc_pclk1)
- 583:Src/main.c    ****   RCC->D2CCIP2R &= ~(0x7 << 0);
- 520              		.loc 1 583 0
+ 580:Src/main.c    ****   // set USART2/3/4/5/7/8 clockw as (rcc_pclk1)
+ 581:Src/main.c    ****   RCC->D2CCIP2R &= ~(0x7 << 0);
+ 520              		.loc 1 581 0
  521 0104 5A6D     		ldr	r2, [r3, #84]
  522 0106 22F00702 		bic	r2, r2, #7
  523 010a 5A65     		str	r2, [r3, #84]
- 584:Src/main.c    ****   RCC->D2CCIP2R |= (0x0 << 0);
- 524              		.loc 1 584 0
+ 582:Src/main.c    ****   RCC->D2CCIP2R |= (0x0 << 0);
+ 524              		.loc 1 582 0
  525 010c 5A6D     		ldr	r2, [r3, #84]
  526 010e 5A65     		str	r2, [r3, #84]
- 585:Src/main.c    ****   // set USB clock as (HSI48)
- 586:Src/main.c    ****   RCC->D2CCIP2R &= ~(0x3 << 20);
- 527              		.loc 1 586 0
+ 583:Src/main.c    ****   // set USB clock as (HSI48)
+ 584:Src/main.c    ****   RCC->D2CCIP2R &= ~(0x3 << 20);
+ 527              		.loc 1 584 0
  528 0110 5A6D     		ldr	r2, [r3, #84]
  529 0112 22F44012 		bic	r2, r2, #3145728
  530 0116 5A65     		str	r2, [r3, #84]
- 587:Src/main.c    ****   RCC->D2CCIP2R |= (0x3 << 20);
- 531              		.loc 1 587 0
+ 585:Src/main.c    ****   RCC->D2CCIP2R |= (0x3 << 20);
+ 531              		.loc 1 585 0
  532 0118 5A6D     		ldr	r2, [r3, #84]
  533 011a 42F44012 		orr	r2, r2, #3145728
  534 011e 5A65     		str	r2, [r3, #84]
- 588:Src/main.c    ****   // TODO make my own realization of this func
- 589:Src/main.c    ****   // NOTE 1 us is an overkill and just busting CPU for no real purpose
- 590:Src/main.c    ****   //SysTick_Config(400000000/1000);
- 591:Src/main.c    ****   // set prirority of the SysTick
- 592:Src/main.c    ****   //NVIC_SetPriority(SysTick_IRQn, 0);
- 593:Src/main.c    **** }
- 535              		.loc 1 593 0
+ 586:Src/main.c    ****   // TODO make my own realization of this func
+ 587:Src/main.c    ****   // NOTE 1 us is an overkill and just busting CPU for no real purpose
+ 588:Src/main.c    ****   //SysTick_Config(400000000/1000);
+ 589:Src/main.c    ****   // set prirority of the SysTick
+ 590:Src/main.c    ****   //NVIC_SetPriority(SysTick_IRQn, 0);
+ 591:Src/main.c    **** }
+ 535              		.loc 1 591 0
  536 0120 7047     		bx	lr
  537              	.L21:
  538 0122 00BF     		.align	2
@@ -1196,133 +1194,133 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  551              		.fpu fpv5-d16
  553              	my_DMA_init:
  554              	.LFB144:
- 329:Src/main.c    ****   // enable DMA1 clocking
- 555              		.loc 1 329 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 21
-
-
+ 327:Src/main.c    ****   // enable DMA1 clocking
+ 555              		.loc 1 327 0
  556              		.cfi_startproc
  557              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 21
+
+
  558              		@ frame_needed = 0, uses_anonymous_args = 0
  559 0000 10B5     		push	{r4, lr}
  560              	.LCFI0:
  561              		.cfi_def_cfa_offset 8
  562              		.cfi_offset 4, -8
  563              		.cfi_offset 14, -4
- 331:Src/main.c    ****   // clear EN bit to 0
- 564              		.loc 1 331 0
+ 329:Src/main.c    ****   // clear EN bit to 0
+ 564              		.loc 1 329 0
  565 0002 324A     		ldr	r2, .L28
  566 0004 D2F8D830 		ldr	r3, [r2, #216]
  567 0008 43F00103 		orr	r3, r3, #1
  568 000c C2F8D830 		str	r3, [r2, #216]
- 333:Src/main.c    ****   // safeguard EN bit reset
- 569              		.loc 1 333 0
+ 331:Src/main.c    ****   // safeguard EN bit reset
+ 569              		.loc 1 331 0
  570 0010 2F4A     		ldr	r2, .L28+4
  571 0012 1368     		ldr	r3, [r2]
  572 0014 23F00103 		bic	r3, r3, #1
  573 0018 1360     		str	r3, [r2]
  574              	.L23:
- 335:Src/main.c    ****   // check LISR HISR registers
- 575              		.loc 1 335 0 discriminator 1
+ 333:Src/main.c    ****   // check LISR HISR registers
+ 575              		.loc 1 333 0 discriminator 1
  576 001a 2D4B     		ldr	r3, .L28+4
  577 001c 1B68     		ldr	r3, [r3]
  578 001e 13F0010F 		tst	r3, #1
  579 0022 FAD1     		bne	.L23
- 337:Src/main.c    ****     printf("status registers is clear\r\n");
- 580              		.loc 1 337 0
+ 335:Src/main.c    ****     printf("status registers is clear\r\n");
+ 580              		.loc 1 335 0
  581 0024 2B4B     		ldr	r3, .L28+8
  582 0026 5B68     		ldr	r3, [r3, #4]
  583 0028 1BB9     		cbnz	r3, .L24
- 337:Src/main.c    ****     printf("status registers is clear\r\n");
- 584              		.loc 1 337 0 is_stmt 0 discriminator 1
+ 335:Src/main.c    ****     printf("status registers is clear\r\n");
+ 584              		.loc 1 335 0 is_stmt 0 discriminator 1
  585 002a 2A4B     		ldr	r3, .L28+8
  586 002c 1B68     		ldr	r3, [r3]
  587 002e 002B     		cmp	r3, #0
  588 0030 47D0     		beq	.L27
  589              	.L24:
- 340:Src/main.c    ****   // set peripheral addres
- 590              		.loc 1 340 0 is_stmt 1
+ 338:Src/main.c    ****   // set peripheral addres
+ 590              		.loc 1 338 0 is_stmt 1
  591 0032 2948     		ldr	r0, .L28+12
  592 0034 FFF7FEFF 		bl	puts
  593              	.LVL3:
  594              	.L25:
- 342:Src/main.c    ****   // set memory addres
- 595              		.loc 1 342 0
+ 340:Src/main.c    ****   // set memory addres
+ 595              		.loc 1 340 0
  596 0038 254C     		ldr	r4, .L28+4
  597 003a 284B     		ldr	r3, .L28+16
  598 003c A360     		str	r3, [r4, #8]
- 345:Src/main.c    ****   // set total number of data items
- 599              		.loc 1 345 0
+ 343:Src/main.c    ****   // set total number of data items
+ 599              		.loc 1 343 0
  600 003e 284B     		ldr	r3, .L28+20
  601 0040 E360     		str	r3, [r4, #12]
- 347:Src/main.c    ****   // NOTE: configurate TIM2_CH1 interrupt route
- 602              		.loc 1 347 0
+ 345:Src/main.c    ****   // NOTE: configurate TIM2_CH1 interrupt route
+ 602              		.loc 1 345 0
  603 0042 4FF47043 		mov	r3, #61440
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 22
-
-
  604 0046 6360     		str	r3, [r4, #4]
- 350:Src/main.c    ****   // set DMA priority (very high)
- 605              		.loc 1 350 0
+ 348:Src/main.c    ****   // set DMA priority (very high)
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 22
+
+
+ 605              		.loc 1 348 0
  606 0048 264A     		ldr	r2, .L28+24
  607 004a 1368     		ldr	r3, [r2]
  608 004c 43F01203 		orr	r3, r3, #18
  609 0050 1360     		str	r3, [r2]
- 352:Src/main.c    ****   // set memory data size (16)
- 610              		.loc 1 352 0
+ 350:Src/main.c    ****   // set memory data size (16)
+ 610              		.loc 1 350 0
  611 0052 2368     		ldr	r3, [r4]
  612 0054 43F44033 		orr	r3, r3, #196608
  613 0058 2360     		str	r3, [r4]
- 354:Src/main.c    ****   // set peripheral data size (16)
- 614              		.loc 1 354 0
+ 352:Src/main.c    ****   // set peripheral data size (16)
+ 614              		.loc 1 352 0
  615 005a 2368     		ldr	r3, [r4]
  616 005c 43F40053 		orr	r3, r3, #8192
  617 0060 2360     		str	r3, [r4]
- 356:Src/main.c    ****   // set memory addres increment  (enable)
- 618              		.loc 1 356 0
+ 354:Src/main.c    ****   // set memory addres increment  (enable)
+ 618              		.loc 1 354 0
  619 0062 2368     		ldr	r3, [r4]
  620 0064 43F40063 		orr	r3, r3, #2048
  621 0068 2360     		str	r3, [r4]
- 358:Src/main.c    ****   // set peripheral addres increment (disable)
- 622              		.loc 1 358 0
+ 356:Src/main.c    ****   // set peripheral addres increment (disable)
+ 622              		.loc 1 356 0
  623 006a 2368     		ldr	r3, [r4]
  624 006c 43F48063 		orr	r3, r3, #1024
  625 0070 2360     		str	r3, [r4]
- 360:Src/main.c    ****   // set circular buffer mode (enable)
- 626              		.loc 1 360 0
+ 358:Src/main.c    ****   // set circular buffer mode (enable)
+ 626              		.loc 1 358 0
  627 0072 2368     		ldr	r3, [r4]
  628 0074 2360     		str	r3, [r4]
- 362:Src/main.c    ****   // set data transfer direction (peripheral to memory)
- 629              		.loc 1 362 0
+ 360:Src/main.c    ****   // set data transfer direction (peripheral to memory)
+ 629              		.loc 1 360 0
  630 0076 2368     		ldr	r3, [r4]
  631 0078 43F48073 		orr	r3, r3, #256
  632 007c 2360     		str	r3, [r4]
- 364:Src/main.c    ****   // set transfer complete interrupt
- 633              		.loc 1 364 0
+ 362:Src/main.c    ****   // set transfer complete interrupt
+ 633              		.loc 1 362 0
  634 007e 2368     		ldr	r3, [r4]
  635 0080 2360     		str	r3, [r4]
- 366:Src/main.c    ****   // set transfer error interrupt
- 636              		.loc 1 366 0
+ 364:Src/main.c    ****   // set transfer error interrupt
+ 636              		.loc 1 364 0
  637 0082 2368     		ldr	r3, [r4]
  638 0084 43F01003 		orr	r3, r3, #16
  639 0088 2360     		str	r3, [r4]
- 368:Src/main.c    ****   // enable DMA1
- 640              		.loc 1 368 0
+ 366:Src/main.c    ****   // enable DMA1
+ 640              		.loc 1 366 0
  641 008a 2368     		ldr	r3, [r4]
  642 008c 43F00403 		orr	r3, r3, #4
  643 0090 2360     		str	r3, [r4]
- 370:Src/main.c    ****   // enable IRQ
- 644              		.loc 1 370 0
+ 368:Src/main.c    ****   // enable IRQ
+ 644              		.loc 1 368 0
  645 0092 2368     		ldr	r3, [r4]
  646 0094 43F00103 		orr	r3, r3, #1
  647 0098 2360     		str	r3, [r4]
  648              	.LVL4:
  649              	.LBB68:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 23
-
-
  650              	.LBB69:
  651              		.file 2 "Drivers/CMSIS/Include/core_cm7.h"
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 23
+
+
    1:Drivers/CMSIS/Include/core_cm7.h **** /**************************************************************************//**
    2:Drivers/CMSIS/Include/core_cm7.h ****  * @file     core_cm7.h
    3:Drivers/CMSIS/Include/core_cm7.h ****  * @brief    CMSIS Cortex-M7 Core Peripheral Access Layer Header File
@@ -1378,11 +1376,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   53:Drivers/CMSIS/Include/core_cm7.h **** 
   54:Drivers/CMSIS/Include/core_cm7.h **** 
   55:Drivers/CMSIS/Include/core_cm7.h **** /*******************************************************************************
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 24
-
-
   56:Drivers/CMSIS/Include/core_cm7.h ****  *                 CMSIS definitions
   57:Drivers/CMSIS/Include/core_cm7.h ****  ******************************************************************************/
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 24
+
+
   58:Drivers/CMSIS/Include/core_cm7.h **** /**
   59:Drivers/CMSIS/Include/core_cm7.h ****   \ingroup Cortex_M7
   60:Drivers/CMSIS/Include/core_cm7.h ****   @{
@@ -1438,11 +1436,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  110:Drivers/CMSIS/Include/core_cm7.h **** #elif defined ( __ICCARM__ )
  111:Drivers/CMSIS/Include/core_cm7.h ****   #if defined __ARMVFP__
  112:Drivers/CMSIS/Include/core_cm7.h ****     #if defined (__FPU_PRESENT) && (__FPU_PRESENT == 1U)
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 25
-
-
  113:Drivers/CMSIS/Include/core_cm7.h ****       #define __FPU_USED       1U
  114:Drivers/CMSIS/Include/core_cm7.h ****     #else
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 25
+
+
  115:Drivers/CMSIS/Include/core_cm7.h ****       #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)
  116:Drivers/CMSIS/Include/core_cm7.h ****       #define __FPU_USED       0U
  117:Drivers/CMSIS/Include/core_cm7.h ****     #endif
@@ -1498,11 +1496,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  167:Drivers/CMSIS/Include/core_cm7.h **** #endif /* __CORE_CM7_H_GENERIC */
  168:Drivers/CMSIS/Include/core_cm7.h **** 
  169:Drivers/CMSIS/Include/core_cm7.h **** #ifndef __CMSIS_GENERIC
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 26
-
-
  170:Drivers/CMSIS/Include/core_cm7.h **** 
  171:Drivers/CMSIS/Include/core_cm7.h **** #ifndef __CORE_CM7_H_DEPENDANT
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 26
+
+
  172:Drivers/CMSIS/Include/core_cm7.h **** #define __CORE_CM7_H_DEPENDANT
  173:Drivers/CMSIS/Include/core_cm7.h **** 
  174:Drivers/CMSIS/Include/core_cm7.h **** #ifdef __cplusplus
@@ -1558,11 +1556,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  224:Drivers/CMSIS/Include/core_cm7.h **** 
  225:Drivers/CMSIS/Include/core_cm7.h ****     <strong>IO Type Qualifiers</strong> are used
  226:Drivers/CMSIS/Include/core_cm7.h ****     \li to specify the access to peripheral variables.
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 27
-
-
  227:Drivers/CMSIS/Include/core_cm7.h ****     \li for automatic generation of peripheral register debug information.
  228:Drivers/CMSIS/Include/core_cm7.h **** */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 27
+
+
  229:Drivers/CMSIS/Include/core_cm7.h **** #ifdef __cplusplus
  230:Drivers/CMSIS/Include/core_cm7.h ****   #define   __I     volatile             /*!< Defines 'read only' permissions */
  231:Drivers/CMSIS/Include/core_cm7.h **** #else
@@ -1618,11 +1616,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  281:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t C:1;                        /*!< bit:     29  Carry condition code flag */
  282:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t Z:1;                        /*!< bit:     30  Zero condition code flag */
  283:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t N:1;                        /*!< bit:     31  Negative condition code flag */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 28
-
-
  284:Drivers/CMSIS/Include/core_cm7.h ****   } b;                                   /*!< Structure used for bit  access */
  285:Drivers/CMSIS/Include/core_cm7.h ****   uint32_t w;                            /*!< Type      used for word access */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 28
+
+
  286:Drivers/CMSIS/Include/core_cm7.h **** } APSR_Type;
  287:Drivers/CMSIS/Include/core_cm7.h **** 
  288:Drivers/CMSIS/Include/core_cm7.h **** /* APSR Register Definitions */
@@ -1678,11 +1676,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  338:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t T:1;                        /*!< bit:     24  Thumb bit */
  339:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t ICI_IT_2:2;                 /*!< bit: 25..26  ICI/IT part 2 */
  340:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t Q:1;                        /*!< bit:     27  Saturation condition flag */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 29
-
-
  341:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t V:1;                        /*!< bit:     28  Overflow condition code flag */
  342:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t C:1;                        /*!< bit:     29  Carry condition code flag */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 29
+
+
  343:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t Z:1;                        /*!< bit:     30  Zero condition code flag */
  344:Drivers/CMSIS/Include/core_cm7.h ****     uint32_t N:1;                        /*!< bit:     31  Negative condition code flag */
  345:Drivers/CMSIS/Include/core_cm7.h ****   } b;                                   /*!< Structure used for bit  access */
@@ -1738,11 +1736,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  395:Drivers/CMSIS/Include/core_cm7.h **** 
  396:Drivers/CMSIS/Include/core_cm7.h **** /* CONTROL Register Definitions */
  397:Drivers/CMSIS/Include/core_cm7.h **** #define CONTROL_FPCA_Pos                    2U                                            /*!< CONT
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 30
-
-
  398:Drivers/CMSIS/Include/core_cm7.h **** #define CONTROL_FPCA_Msk                   (1UL << CONTROL_FPCA_Pos)                      /*!< CONT
  399:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 30
+
+
  400:Drivers/CMSIS/Include/core_cm7.h **** #define CONTROL_SPSEL_Pos                   1U                                            /*!< CONT
  401:Drivers/CMSIS/Include/core_cm7.h **** #define CONTROL_SPSEL_Msk                  (1UL << CONTROL_SPSEL_Pos)                     /*!< CONT
  402:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -1798,11 +1796,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  452:Drivers/CMSIS/Include/core_cm7.h ****  */
  453:Drivers/CMSIS/Include/core_cm7.h **** typedef struct
  454:Drivers/CMSIS/Include/core_cm7.h **** {
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 31
-
-
  455:Drivers/CMSIS/Include/core_cm7.h ****   __IM  uint32_t CPUID;                  /*!< Offset: 0x000 (R/ )  CPUID Base Register */
  456:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t ICSR;                   /*!< Offset: 0x004 (R/W)  Interrupt Control and State Regi
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 31
+
+
  457:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t VTOR;                   /*!< Offset: 0x008 (R/W)  Vector Table Offset Register */
  458:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t AIRCR;                  /*!< Offset: 0x00C (R/W)  Application Interrupt and Reset 
  459:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t SCR;                    /*!< Offset: 0x010 (R/W)  System Control Register */
@@ -1858,11 +1856,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  509:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CPUID_IMPLEMENTER_Msk          (0xFFUL << SCB_CPUID_IMPLEMENTER_Pos)          /*!< SCB 
  510:Drivers/CMSIS/Include/core_cm7.h **** 
  511:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CPUID_VARIANT_Pos              20U                                            /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 32
-
-
  512:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CPUID_VARIANT_Msk              (0xFUL << SCB_CPUID_VARIANT_Pos)               /*!< SCB 
  513:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 32
+
+
  514:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CPUID_ARCHITECTURE_Pos         16U                                            /*!< SCB 
  515:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CPUID_ARCHITECTURE_Msk         (0xFUL << SCB_CPUID_ARCHITECTURE_Pos)          /*!< SCB 
  516:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -1918,11 +1916,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  566:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_AIRCR_ENDIANESS_Msk            (1UL << SCB_AIRCR_ENDIANESS_Pos)               /*!< SCB 
  567:Drivers/CMSIS/Include/core_cm7.h **** 
  568:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_AIRCR_PRIGROUP_Pos              8U                                            /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 33
-
-
  569:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_AIRCR_PRIGROUP_Msk             (7UL << SCB_AIRCR_PRIGROUP_Pos)                /*!< SCB 
  570:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 33
+
+
  571:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_AIRCR_SYSRESETREQ_Pos           2U                                            /*!< SCB 
  572:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_AIRCR_SYSRESETREQ_Msk          (1UL << SCB_AIRCR_SYSRESETREQ_Pos)             /*!< SCB 
  573:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -1978,11 +1976,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  623:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_SHCSR_BUSFAULTENA_Msk          (1UL << SCB_SHCSR_BUSFAULTENA_Pos)             /*!< SCB 
  624:Drivers/CMSIS/Include/core_cm7.h **** 
  625:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_SHCSR_MEMFAULTENA_Pos          16U                                            /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 34
-
-
  626:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_SHCSR_MEMFAULTENA_Msk          (1UL << SCB_SHCSR_MEMFAULTENA_Pos)             /*!< SCB 
  627:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 34
+
+
  628:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_SHCSR_SVCALLPENDED_Pos         15U                                            /*!< SCB 
  629:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_SHCSR_SVCALLPENDED_Msk         (1UL << SCB_SHCSR_SVCALLPENDED_Pos)            /*!< SCB 
  630:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2038,11 +2036,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  680:Drivers/CMSIS/Include/core_cm7.h **** 
  681:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CFSR_MUNSTKERR_Pos             (SCB_SHCSR_MEMFAULTACT_Pos + 3U)               /*!< SCB 
  682:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CFSR_MUNSTKERR_Msk             (1UL << SCB_CFSR_MUNSTKERR_Pos)                /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 35
-
-
  683:Drivers/CMSIS/Include/core_cm7.h **** 
  684:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CFSR_DACCVIOL_Pos              (SCB_SHCSR_MEMFAULTACT_Pos + 1U)               /*!< SCB 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 35
+
+
  685:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CFSR_DACCVIOL_Msk              (1UL << SCB_CFSR_DACCVIOL_Pos)                 /*!< SCB 
  686:Drivers/CMSIS/Include/core_cm7.h **** 
  687:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CFSR_IACCVIOL_Pos              (SCB_SHCSR_MEMFAULTACT_Pos + 0U)               /*!< SCB 
@@ -2098,11 +2096,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  737:Drivers/CMSIS/Include/core_cm7.h **** 
  738:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_HFSR_VECTTBL_Pos                1U                                            /*!< SCB 
  739:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_HFSR_VECTTBL_Msk               (1UL << SCB_HFSR_VECTTBL_Pos)                  /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 36
-
-
  740:Drivers/CMSIS/Include/core_cm7.h **** 
  741:Drivers/CMSIS/Include/core_cm7.h **** /* SCB Debug Fault Status Register Definitions */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 36
+
+
  742:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DFSR_EXTERNAL_Pos               4U                                            /*!< SCB 
  743:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DFSR_EXTERNAL_Msk              (1UL << SCB_DFSR_EXTERNAL_Pos)                 /*!< SCB 
  744:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2158,11 +2156,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  794:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CCSIDR_NUMSETS_Msk             (0x7FFFUL << SCB_CCSIDR_NUMSETS_Pos)           /*!< SCB 
  795:Drivers/CMSIS/Include/core_cm7.h **** 
  796:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CCSIDR_ASSOCIATIVITY_Pos        3U                                            /*!< SCB 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 37
-
-
  797:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CCSIDR_ASSOCIATIVITY_Msk       (0x3FFUL << SCB_CCSIDR_ASSOCIATIVITY_Pos)      /*!< SCB 
  798:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 37
+
+
  799:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CCSIDR_LINESIZE_Pos             0U                                            /*!< SCB 
  800:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_CCSIDR_LINESIZE_Msk            (7UL /*<< SCB_CCSIDR_LINESIZE_Pos*/)           /*!< SCB 
  801:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2218,11 +2216,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  851:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_RETEN_Pos                2U                                            /*!< SCB 
  852:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_RETEN_Msk               (1UL << SCB_DTCMCR_RETEN_Pos)                   /*!< SCB
  853:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 38
-
-
  854:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_RMW_Pos                  1U                                            /*!< SCB 
  855:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_RMW_Msk                 (1UL << SCB_DTCMCR_RMW_Pos)                    /*!< SCB 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 38
+
+
  856:Drivers/CMSIS/Include/core_cm7.h **** 
  857:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_EN_Pos                   0U                                            /*!< SCB 
  858:Drivers/CMSIS/Include/core_cm7.h **** #define SCB_DTCMCR_EN_Msk                  (1UL /*<< SCB_DTCMCR_EN_Pos*/)                 /*!< SCB 
@@ -2278,11 +2276,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  908:Drivers/CMSIS/Include/core_cm7.h **** 
  909:Drivers/CMSIS/Include/core_cm7.h **** /**
  910:Drivers/CMSIS/Include/core_cm7.h ****   \ingroup  CMSIS_core_register
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 39
-
-
  911:Drivers/CMSIS/Include/core_cm7.h ****   \defgroup CMSIS_SCnSCB System Controls not in SCB (SCnSCB)
  912:Drivers/CMSIS/Include/core_cm7.h ****   \brief    Type definitions for the System Control and ID Register not in the SCB
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 39
+
+
  913:Drivers/CMSIS/Include/core_cm7.h ****   @{
  914:Drivers/CMSIS/Include/core_cm7.h ****  */
  915:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2338,11 +2336,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  965:Drivers/CMSIS/Include/core_cm7.h **** } SysTick_Type;
  966:Drivers/CMSIS/Include/core_cm7.h **** 
  967:Drivers/CMSIS/Include/core_cm7.h **** /* SysTick Control / Status Register Definitions */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 40
-
-
  968:Drivers/CMSIS/Include/core_cm7.h **** #define SysTick_CTRL_COUNTFLAG_Pos         16U                                            /*!< SysT
  969:Drivers/CMSIS/Include/core_cm7.h **** #define SysTick_CTRL_COUNTFLAG_Msk         (1UL << SysTick_CTRL_COUNTFLAG_Pos)            /*!< SysT
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 40
+
+
  970:Drivers/CMSIS/Include/core_cm7.h **** 
  971:Drivers/CMSIS/Include/core_cm7.h **** #define SysTick_CTRL_CLKSOURCE_Pos          2U                                            /*!< SysT
  972:Drivers/CMSIS/Include/core_cm7.h **** #define SysTick_CTRL_CLKSOURCE_Msk         (1UL << SysTick_CTRL_CLKSOURCE_Pos)            /*!< SysT
@@ -2398,11 +2396,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1022:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t TPR;                    /*!< Offset: 0xE40 (R/W)  ITM Trace Privilege Register */
 1023:Drivers/CMSIS/Include/core_cm7.h ****         uint32_t RESERVED2[15U];
 1024:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t TCR;                    /*!< Offset: 0xE80 (R/W)  ITM Trace Control Register */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 41
-
-
 1025:Drivers/CMSIS/Include/core_cm7.h ****         uint32_t RESERVED3[29U];
 1026:Drivers/CMSIS/Include/core_cm7.h ****   __OM  uint32_t IWR;                    /*!< Offset: 0xEF8 ( /W)  ITM Integration Write Register *
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 41
+
+
 1027:Drivers/CMSIS/Include/core_cm7.h ****   __IM  uint32_t IRR;                    /*!< Offset: 0xEFC (R/ )  ITM Integration Read Register */
 1028:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t IMCR;                   /*!< Offset: 0xF00 (R/W)  ITM Integration Mode Control Reg
 1029:Drivers/CMSIS/Include/core_cm7.h ****         uint32_t RESERVED4[43U];
@@ -2458,11 +2456,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1079:Drivers/CMSIS/Include/core_cm7.h **** /* ITM Integration Write Register Definitions */
 1080:Drivers/CMSIS/Include/core_cm7.h **** #define ITM_IWR_ATVALIDM_Pos                0U                                            /*!< ITM 
 1081:Drivers/CMSIS/Include/core_cm7.h **** #define ITM_IWR_ATVALIDM_Msk               (1UL /*<< ITM_IWR_ATVALIDM_Pos*/)              /*!< ITM 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 42
-
-
 1082:Drivers/CMSIS/Include/core_cm7.h **** 
 1083:Drivers/CMSIS/Include/core_cm7.h **** /* ITM Integration Read Register Definitions */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 42
+
+
 1084:Drivers/CMSIS/Include/core_cm7.h **** #define ITM_IRR_ATREADYM_Pos                0U                                            /*!< ITM 
 1085:Drivers/CMSIS/Include/core_cm7.h **** #define ITM_IRR_ATREADYM_Msk               (1UL /*<< ITM_IRR_ATREADYM_Pos*/)              /*!< ITM 
 1086:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2518,11 +2516,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1136:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t COMP3;                  /*!< Offset: 0x050 (R/W)  Comparator Register 3 */
 1137:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t MASK3;                  /*!< Offset: 0x054 (R/W)  Mask Register 3 */
 1138:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t FUNCTION3;              /*!< Offset: 0x058 (R/W)  Function Register 3 */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 43
-
-
 1139:Drivers/CMSIS/Include/core_cm7.h ****         uint32_t RESERVED3[981U];
 1140:Drivers/CMSIS/Include/core_cm7.h ****   __OM  uint32_t LAR;                    /*!< Offset: 0xFB0 (  W)  Lock Access Register */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 43
+
+
 1141:Drivers/CMSIS/Include/core_cm7.h ****   __IM  uint32_t LSR;                    /*!< Offset: 0xFB4 (R  )  Lock Status Register */
 1142:Drivers/CMSIS/Include/core_cm7.h **** } DWT_Type;
 1143:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2578,11 +2576,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1193:Drivers/CMSIS/Include/core_cm7.h **** #define DWT_CTRL_POSTPRESET_Pos             1U                                         /*!< DWT CTR
 1194:Drivers/CMSIS/Include/core_cm7.h **** #define DWT_CTRL_POSTPRESET_Msk            (0xFUL << DWT_CTRL_POSTPRESET_Pos)          /*!< DWT CTR
 1195:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 44
-
-
 1196:Drivers/CMSIS/Include/core_cm7.h **** #define DWT_CTRL_CYCCNTENA_Pos              0U                                         /*!< DWT CTR
 1197:Drivers/CMSIS/Include/core_cm7.h **** #define DWT_CTRL_CYCCNTENA_Msk             (0x1UL /*<< DWT_CTRL_CYCCNTENA_Pos*/)       /*!< DWT CTR
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 44
+
+
 1198:Drivers/CMSIS/Include/core_cm7.h **** 
 1199:Drivers/CMSIS/Include/core_cm7.h **** /* DWT CPI Count Register Definitions */
 1200:Drivers/CMSIS/Include/core_cm7.h **** #define DWT_CPICNT_CPICNT_Pos               0U                                         /*!< DWT CPI
@@ -2638,11 +2636,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1250:Drivers/CMSIS/Include/core_cm7.h **** 
 1251:Drivers/CMSIS/Include/core_cm7.h **** /*@}*/ /* end of group CMSIS_DWT */
 1252:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 45
-
-
 1253:Drivers/CMSIS/Include/core_cm7.h **** 
 1254:Drivers/CMSIS/Include/core_cm7.h **** /**
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 45
+
+
 1255:Drivers/CMSIS/Include/core_cm7.h ****   \ingroup  CMSIS_core_register
 1256:Drivers/CMSIS/Include/core_cm7.h ****   \defgroup CMSIS_TPI     Trace Port Interface (TPI)
 1257:Drivers/CMSIS/Include/core_cm7.h ****   \brief    Type definitions for the Trace Port Interface (TPI)
@@ -2698,11 +2696,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1307:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FFSR_FtStopped_Pos              1U                                         /*!< TPI FFS
 1308:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FFSR_FtStopped_Msk             (0x1UL << TPI_FFSR_FtStopped_Pos)           /*!< TPI FFS
 1309:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 46
-
-
 1310:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FFSR_FlInProg_Pos               0U                                         /*!< TPI FFS
 1311:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FFSR_FlInProg_Msk              (0x1UL /*<< TPI_FFSR_FlInProg_Pos*/)        /*!< TPI FFS
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 46
+
+
 1312:Drivers/CMSIS/Include/core_cm7.h **** 
 1313:Drivers/CMSIS/Include/core_cm7.h **** /* TPI Formatter and Flush Control Register Definitions */
 1314:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FFCR_TrigIn_Pos                 8U                                         /*!< TPI FFC
@@ -2758,11 +2756,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1364:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FIFO1_ITM2_Msk                 (0xFFUL << TPI_FIFO1_ITM2_Pos)              /*!< TPI FIF
 1365:Drivers/CMSIS/Include/core_cm7.h **** 
 1366:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FIFO1_ITM1_Pos                  8U                                         /*!< TPI FIF
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 47
-
-
 1367:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FIFO1_ITM1_Msk                 (0xFFUL << TPI_FIFO1_ITM1_Pos)              /*!< TPI FIF
 1368:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 47
+
+
 1369:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FIFO1_ITM0_Pos                  0U                                         /*!< TPI FIF
 1370:Drivers/CMSIS/Include/core_cm7.h **** #define TPI_FIFO1_ITM0_Msk                 (0xFFUL /*<< TPI_FIFO1_ITM0_Pos*/)          /*!< TPI FIF
 1371:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -2818,11 +2816,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1421:Drivers/CMSIS/Include/core_cm7.h **** {
 1422:Drivers/CMSIS/Include/core_cm7.h ****   __IM  uint32_t TYPE;                   /*!< Offset: 0x000 (R/ )  MPU Type Register */
 1423:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t CTRL;                   /*!< Offset: 0x004 (R/W)  MPU Control Register */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 48
-
-
 1424:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t RNR;                    /*!< Offset: 0x008 (R/W)  MPU Region RNRber Register */
 1425:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t RBAR;                   /*!< Offset: 0x00C (R/W)  MPU Region Base Address Register
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 48
+
+
 1426:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t RASR;                   /*!< Offset: 0x010 (R/W)  MPU Region Attribute and Size Re
 1427:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t RBAR_A1;                /*!< Offset: 0x014 (R/W)  MPU Alias 1 Region Base Address 
 1428:Drivers/CMSIS/Include/core_cm7.h ****   __IOM uint32_t RASR_A1;                /*!< Offset: 0x018 (R/W)  MPU Alias 1 Region Attribute and
@@ -2878,11 +2876,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1478:Drivers/CMSIS/Include/core_cm7.h **** 
 1479:Drivers/CMSIS/Include/core_cm7.h **** #define MPU_RASR_TEX_Pos                   19U                                            /*!< MPU 
 1480:Drivers/CMSIS/Include/core_cm7.h **** #define MPU_RASR_TEX_Msk                   (0x7UL << MPU_RASR_TEX_Pos)                    /*!< MPU 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 49
-
-
 1481:Drivers/CMSIS/Include/core_cm7.h **** 
 1482:Drivers/CMSIS/Include/core_cm7.h **** #define MPU_RASR_S_Pos                     18U                                            /*!< MPU 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 49
+
+
 1483:Drivers/CMSIS/Include/core_cm7.h **** #define MPU_RASR_S_Msk                     (1UL << MPU_RASR_S_Pos)                        /*!< MPU 
 1484:Drivers/CMSIS/Include/core_cm7.h **** 
 1485:Drivers/CMSIS/Include/core_cm7.h **** #define MPU_RASR_C_Pos                     17U                                            /*!< MPU 
@@ -2938,11 +2936,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1535:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_BFRDY_Pos                 6U                                            /*!< FPCC
 1536:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_BFRDY_Msk                (1UL << FPU_FPCCR_BFRDY_Pos)                   /*!< FPCC
 1537:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 50
-
-
 1538:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_MMRDY_Pos                 5U                                            /*!< FPCC
 1539:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_MMRDY_Msk                (1UL << FPU_FPCCR_MMRDY_Pos)                   /*!< FPCC
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 50
+
+
 1540:Drivers/CMSIS/Include/core_cm7.h **** 
 1541:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_HFRDY_Pos                 4U                                            /*!< FPCC
 1542:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_FPCCR_HFRDY_Msk                (1UL << FPU_FPCCR_HFRDY_Pos)                   /*!< FPCC
@@ -2998,11 +2996,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1592:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_MVFR0_A_SIMD_registers_Pos      0U                                            /*!< MVFR
 1593:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_MVFR0_A_SIMD_registers_Msk     (0xFUL /*<< FPU_MVFR0_A_SIMD_registers_Pos*/)  /*!< MVFR
 1594:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 51
-
-
 1595:Drivers/CMSIS/Include/core_cm7.h **** /* Media and FP Feature Register 1 Definitions */
 1596:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_MVFR1_FP_fused_MAC_Pos         28U                                            /*!< MVFR
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 51
+
+
 1597:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_MVFR1_FP_fused_MAC_Msk         (0xFUL << FPU_MVFR1_FP_fused_MAC_Pos)          /*!< MVFR
 1598:Drivers/CMSIS/Include/core_cm7.h **** 
 1599:Drivers/CMSIS/Include/core_cm7.h **** #define FPU_MVFR1_FP_HPFP_Pos              24U                                            /*!< MVFR
@@ -3058,11 +3056,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1649:Drivers/CMSIS/Include/core_cm7.h **** 
 1650:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DHCSR_S_REGRDY_Pos       16U                                            /*!< Core
 1651:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DHCSR_S_REGRDY_Msk       (1UL << CoreDebug_DHCSR_S_REGRDY_Pos)          /*!< Core
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 52
-
-
 1652:Drivers/CMSIS/Include/core_cm7.h **** 
 1653:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DHCSR_C_SNAPSTALL_Pos     5U                                            /*!< Core
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 52
+
+
 1654:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DHCSR_C_SNAPSTALL_Msk    (1UL << CoreDebug_DHCSR_C_SNAPSTALL_Pos)       /*!< Core
 1655:Drivers/CMSIS/Include/core_cm7.h **** 
 1656:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DHCSR_C_MASKINTS_Pos      3U                                            /*!< Core
@@ -3118,11 +3116,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1706:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_NOCPERR_Pos      5U                                            /*!< Core
 1707:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_NOCPERR_Msk     (1UL << CoreDebug_DEMCR_VC_NOCPERR_Pos)        /*!< Core
 1708:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 53
-
-
 1709:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_MMERR_Pos        4U                                            /*!< Core
 1710:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_MMERR_Msk       (1UL << CoreDebug_DEMCR_VC_MMERR_Pos)          /*!< Core
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 53
+
+
 1711:Drivers/CMSIS/Include/core_cm7.h **** 
 1712:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_CORERESET_Pos    0U                                            /*!< Core
 1713:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug_DEMCR_VC_CORERESET_Msk   (1UL /*<< CoreDebug_DEMCR_VC_CORERESET_Pos*/)  /*!< Core
@@ -3178,11 +3176,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1763:Drivers/CMSIS/Include/core_cm7.h **** #define SysTick             ((SysTick_Type   *)     SysTick_BASE  )   /*!< SysTick configuration st
 1764:Drivers/CMSIS/Include/core_cm7.h **** #define NVIC                ((NVIC_Type      *)     NVIC_BASE     )   /*!< NVIC configuration struc
 1765:Drivers/CMSIS/Include/core_cm7.h **** #define ITM                 ((ITM_Type       *)     ITM_BASE      )   /*!< ITM configuration struct
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 54
-
-
 1766:Drivers/CMSIS/Include/core_cm7.h **** #define DWT                 ((DWT_Type       *)     DWT_BASE      )   /*!< DWT configuration struct
 1767:Drivers/CMSIS/Include/core_cm7.h **** #define TPI                 ((TPI_Type       *)     TPI_BASE      )   /*!< TPI configuration struct
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 54
+
+
 1768:Drivers/CMSIS/Include/core_cm7.h **** #define CoreDebug           ((CoreDebug_Type *)     CoreDebug_BASE)   /*!< Core Debug configuration
 1769:Drivers/CMSIS/Include/core_cm7.h **** 
 1770:Drivers/CMSIS/Include/core_cm7.h **** #if defined (__MPU_PRESENT) && (__MPU_PRESENT == 1U)
@@ -3238,11 +3236,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1820:Drivers/CMSIS/Include/core_cm7.h ****   #define NVIC_GetVector              __NVIC_GetVector
 1821:Drivers/CMSIS/Include/core_cm7.h **** #endif  /* (CMSIS_VECTAB_VIRTUAL) */
 1822:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 55
-
-
 1823:Drivers/CMSIS/Include/core_cm7.h **** #define NVIC_USER_IRQ_OFFSET          16
 1824:Drivers/CMSIS/Include/core_cm7.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 55
+
+
 1825:Drivers/CMSIS/Include/core_cm7.h **** 
 1826:Drivers/CMSIS/Include/core_cm7.h **** 
 1827:Drivers/CMSIS/Include/core_cm7.h **** /**
@@ -3298,11 +3296,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  657              	.LBE69:
  658              	.LBE68:
  659              	.LBB70:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 56
-
-
  660              	.LBB71:
 1872:Drivers/CMSIS/Include/core_cm7.h ****   }
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 56
+
+
 1873:Drivers/CMSIS/Include/core_cm7.h **** }
 1874:Drivers/CMSIS/Include/core_cm7.h **** 
 1875:Drivers/CMSIS/Include/core_cm7.h **** 
@@ -3358,11 +3356,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1925:Drivers/CMSIS/Include/core_cm7.h ****   {
 1926:Drivers/CMSIS/Include/core_cm7.h ****     return((uint32_t)(((NVIC->ISPR[(((uint32_t)(int32_t)IRQn) >> 5UL)] & (1UL << (((uint32_t)(int32
 1927:Drivers/CMSIS/Include/core_cm7.h ****   }
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 57
-
-
 1928:Drivers/CMSIS/Include/core_cm7.h ****   else
 1929:Drivers/CMSIS/Include/core_cm7.h ****   {
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 57
+
+
 1930:Drivers/CMSIS/Include/core_cm7.h ****     return(0U);
 1931:Drivers/CMSIS/Include/core_cm7.h ****   }
 1932:Drivers/CMSIS/Include/core_cm7.h **** }
@@ -3418,11 +3416,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 1982:Drivers/CMSIS/Include/core_cm7.h ****   }
 1983:Drivers/CMSIS/Include/core_cm7.h **** }
 1984:Drivers/CMSIS/Include/core_cm7.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 58
-
-
 1985:Drivers/CMSIS/Include/core_cm7.h **** 
 1986:Drivers/CMSIS/Include/core_cm7.h **** /**
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 58
+
+
 1987:Drivers/CMSIS/Include/core_cm7.h ****   \brief   Set Interrupt Priority
 1988:Drivers/CMSIS/Include/core_cm7.h ****   \details Sets the priority of a device specific interrupt or a processor exception.
 1989:Drivers/CMSIS/Include/core_cm7.h ****            The interrupt number can be positive to specify a device specific interrupt,
@@ -3442,26 +3440,26 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  664              	.LVL6:
  665              	.LBE71:
  666              	.LBE70:
- 374:Src/main.c    ****   printf("DMA1_Stream0 CIRC %lu \r\n", (DMA1_Stream0->CR >> 8) & 0x1);
- 667              		.loc 1 374 0
+ 372:Src/main.c    ****   printf("DMA1_Stream0 CIRC %lu \r\n", (DMA1_Stream0->CR >> 8) & 0x1);
+ 667              		.loc 1 372 0
  668 00a8 2168     		ldr	r1, [r4]
  669 00aa 01F00101 		and	r1, r1, #1
  670 00ae 0F48     		ldr	r0, .L28+32
  671 00b0 FFF7FEFF 		bl	printf
  672              	.LVL7:
- 375:Src/main.c    **** }
- 673              		.loc 1 375 0
+ 373:Src/main.c    **** }
+ 673              		.loc 1 373 0
  674 00b4 2168     		ldr	r1, [r4]
  675 00b6 C1F30021 		ubfx	r1, r1, #8, #1
  676 00ba 0D48     		ldr	r0, .L28+36
  677 00bc FFF7FEFF 		bl	printf
  678              	.LVL8:
- 376:Src/main.c    **** 
- 679              		.loc 1 376 0
+ 374:Src/main.c    **** 
+ 679              		.loc 1 374 0
  680 00c0 10BD     		pop	{r4, pc}
  681              	.L27:
- 338:Src/main.c    ****   else
- 682              		.loc 1 338 0
+ 336:Src/main.c    ****   else
+ 682              		.loc 1 336 0
  683 00c2 0C48     		ldr	r0, .L28+40
  684 00c4 FFF7FEFF 		bl	puts
  685              	.LVL9:
@@ -3478,11 +3476,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  696 00e4 00080240 		.word	1073874944
  697 00e8 00E100E0 		.word	-536813312
  698 00ec 4C000000 		.word	.LC2
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 59
-
-
  699 00f0 60000000 		.word	.LC3
  700 00f4 00000000 		.word	.LC0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 59
+
+
  701              		.cfi_endproc
  702              	.LFE144:
  704              		.section	.text.main,"ax",%progbits
@@ -3494,8 +3492,8 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  710              		.fpu fpv5-d16
  712              	main:
  713              	.LFB137:
-  85:Src/main.c    **** 
- 714              		.loc 1 85 0
+  86:Src/main.c    **** 
+ 714              		.loc 1 86 0
  715              		.cfi_startproc
  716              		@ args = 0, pretend = 0, frame = 0
  717              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -3508,8 +3506,8 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  724              		.cfi_offset 6, -12
  725              		.cfi_offset 7, -8
  726              		.cfi_offset 14, -4
-  87:Src/main.c    ****   
- 727              		.loc 1 87 0
+  88:Src/main.c    ****   
+ 727              		.loc 1 88 0
  728 0002 FFF7FEFF 		bl	HAL_Init
  729              	.LVL10:
  730              	.LBB131:
@@ -3538,11 +3536,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   19:Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
   20:Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   21:Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 60
-
-
   22:Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
   23:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 60
+
+
   24:Drivers/CMSIS/Include/cmsis_gcc.h **** 
   25:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
   26:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
@@ -3598,11 +3596,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
   76:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
   77:Drivers/CMSIS/Include/cmsis_gcc.h **** 
   78:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 61
-
-
   79:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
   80:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 61
+
+
   81:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
   82:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
   83:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE void __enable_irq(void)
@@ -3658,11 +3656,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  133:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    control  Control Register value to set
  134:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
  135:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE void __set_CONTROL(uint32_t control)
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 62
-
-
  136:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  137:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) : "memory");
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 62
+
+
  138:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  139:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  140:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -3718,11 +3716,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  190:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  191:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
  192:Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 63
-
-
  193:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  194:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 63
+
+
  195:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  196:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
  197:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer
@@ -3778,11 +3776,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  247:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
  248:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  249:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 64
-
-
  250:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
  251:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 64
+
+
  252:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Main Stack Pointer (MSP).
  253:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               MSP Register value
  254:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
@@ -3838,11 +3836,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  304:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
  305:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Priority Mask
  306:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current state of the priority mask bit from the Priority Mask Register.
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 65
-
-
  307:Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               Priority Mask value
  308:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 65
+
+
  309:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_PRIMASK(void)
  310:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  311:Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
@@ -3898,11 +3896,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  361:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
  362:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable FIQ
  363:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables FIQ interrupts by clearing the F-bit in the CPSR.
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 66
-
-
  364:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
  365:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 66
+
+
  366:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE void __enable_fault_irq(void)
  367:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  368:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie f" : : : "memory");
@@ -3958,11 +3956,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  418:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE void __set_BASEPRI(uint32_t basePri)
  419:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  420:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR basepri, %0" : : "r" (basePri) : "memory");
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 67
-
-
  421:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  422:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 67
+
+
  423:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  424:Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
  425:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
@@ -4018,11 +4016,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  475:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  476:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
  477:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 68
-
-
  478:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  479:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 68
+
+
  480:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Fault Mask
  481:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Fault Mask register.
  482:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    faultMask  Fault Mask value to set
@@ -4078,11 +4076,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  532:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  533:Drivers/CMSIS/Include/cmsis_gcc.h ****   register uint32_t result;
  534:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 69
-
-
  535:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psplim_ns"  : "=r" (result) );
  536:Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 69
+
+
  537:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  538:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
  539:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -4138,11 +4136,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  589:Drivers/CMSIS/Include/cmsis_gcc.h **** {
  590:Drivers/CMSIS/Include/cmsis_gcc.h ****   register uint32_t result;
  591:Drivers/CMSIS/Include/cmsis_gcc.h **** 
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 70
-
-
  592:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msplim_ns" : "=r" (result) );
  593:Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 70
+
+
  594:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  595:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
  596:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -4198,11 +4196,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  646:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  647:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  648:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 71
-
-
  649:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set FPSCR
  650:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Floating Point Status/Control register.
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 71
+
+
  651:Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    fpscr  Floating Point Status/Control value to set
  652:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
  653:Drivers/CMSIS/Include/cmsis_gcc.h **** __attribute__((always_inline)) __STATIC_INLINE void __set_FPSCR(uint32_t fpscr)
@@ -4258,11 +4256,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  703:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
  704:Drivers/CMSIS/Include/cmsis_gcc.h **** //__attribute__((always_inline)) __STATIC_INLINE void __WFI(void)
  705:Drivers/CMSIS/Include/cmsis_gcc.h **** //{
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 72
-
-
  706:Drivers/CMSIS/Include/cmsis_gcc.h **** //  __ASM volatile ("wfi");
  707:Drivers/CMSIS/Include/cmsis_gcc.h **** //}
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 72
+
+
  708:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __WFI()                             __ASM volatile ("wfi")       /* This implementation gen
  709:Drivers/CMSIS/Include/cmsis_gcc.h **** 
  710:Drivers/CMSIS/Include/cmsis_gcc.h **** 
@@ -4318,11 +4316,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  741              		.syntax unified
  742              	.LBE134:
  743              	.LBE133:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 73
-
-
  744              	.LBB135:
  745              	.LBB136:
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 73
+
+
  742:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  746              		.loc 3 742 0
  747              		.syntax unified
@@ -4378,11 +4376,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2042:Drivers/CMSIS/Include/core_cm7.h **** __STATIC_INLINE uint32_t NVIC_EncodePriority (uint32_t PriorityGroup, uint32_t PreemptPriority, uin
 2043:Drivers/CMSIS/Include/core_cm7.h **** {
 2044:Drivers/CMSIS/Include/core_cm7.h ****   uint32_t PriorityGroupTmp = (PriorityGroup & (uint32_t)0x07UL);   /* only values 0..7 are used   
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 74
-
-
 2045:Drivers/CMSIS/Include/core_cm7.h ****   uint32_t PreemptPriorityBits;
 2046:Drivers/CMSIS/Include/core_cm7.h ****   uint32_t SubPriorityBits;
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 74
+
+
 2047:Drivers/CMSIS/Include/core_cm7.h **** 
 2048:Drivers/CMSIS/Include/core_cm7.h ****   PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NV
 2049:Drivers/CMSIS/Include/core_cm7.h ****   SubPriorityBits     = ((PriorityGroupTmp + (uint32_t)(__NVIC_PRIO_BITS)) < (uint32_t)7UL) ? (uint
@@ -4438,11 +4436,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2099:Drivers/CMSIS/Include/core_cm7.h **** /**
 2100:Drivers/CMSIS/Include/core_cm7.h ****   \brief   Get Interrupt Vector
 2101:Drivers/CMSIS/Include/core_cm7.h ****   \details Reads an interrupt vector from interrupt vector table.
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 75
-
-
 2102:Drivers/CMSIS/Include/core_cm7.h ****            The interrupt number can be positive to specify a device specific interrupt,
 2103:Drivers/CMSIS/Include/core_cm7.h ****            or negative to specify a processor exception.
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 75
+
+
 2104:Drivers/CMSIS/Include/core_cm7.h ****   \param [in]   IRQn      Interrupt number.
 2105:Drivers/CMSIS/Include/core_cm7.h ****   \return                 Address of interrupt handler function
 2106:Drivers/CMSIS/Include/core_cm7.h ****  */
@@ -4498,11 +4496,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2156:Drivers/CMSIS/Include/core_cm7.h ****   mvfr0 = SCB->MVFR0;
 2157:Drivers/CMSIS/Include/core_cm7.h ****   if      ((mvfr0 & (FPU_MVFR0_Single_precision_Msk | FPU_MVFR0_Double_precision_Msk)) == 0x220U)
 2158:Drivers/CMSIS/Include/core_cm7.h ****   {
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 76
-
-
 2159:Drivers/CMSIS/Include/core_cm7.h ****     return 2U;           /* Double + Single precision FPU */
 2160:Drivers/CMSIS/Include/core_cm7.h ****   }
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 76
+
+
 2161:Drivers/CMSIS/Include/core_cm7.h ****   else if ((mvfr0 & (FPU_MVFR0_Single_precision_Msk | FPU_MVFR0_Double_precision_Msk)) == 0x020U)
 2162:Drivers/CMSIS/Include/core_cm7.h ****   {
 2163:Drivers/CMSIS/Include/core_cm7.h ****     return 1U;           /* Single precision FPU */
@@ -4558,11 +4556,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2213:Drivers/CMSIS/Include/core_cm7.h **** {
 2214:Drivers/CMSIS/Include/core_cm7.h ****   #if defined (__ICACHE_PRESENT) && (__ICACHE_PRESENT == 1U)
 2215:Drivers/CMSIS/Include/core_cm7.h ****     __DSB();
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 77
-
-
 2216:Drivers/CMSIS/Include/core_cm7.h ****     __ISB();
 2217:Drivers/CMSIS/Include/core_cm7.h ****     SCB->CCR &= ~(uint32_t)SCB_CCR_IC_Msk;  /* disable I-Cache */
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 77
+
+
 2218:Drivers/CMSIS/Include/core_cm7.h ****     SCB->ICIALLU = 0UL;                     /* invalidate I-Cache */
 2219:Drivers/CMSIS/Include/core_cm7.h ****     __DSB();
 2220:Drivers/CMSIS/Include/core_cm7.h ****     __ISB();
@@ -4618,11 +4616,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2239:Drivers/CMSIS/Include/core_cm7.h **** 
 2240:Drivers/CMSIS/Include/core_cm7.h **** 
 2241:Drivers/CMSIS/Include/core_cm7.h **** /**
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 78
-
-
 2242:Drivers/CMSIS/Include/core_cm7.h ****   \brief   Enable D-Cache
 2243:Drivers/CMSIS/Include/core_cm7.h ****   \details Turns on D-Cache
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 78
+
+
 2244:Drivers/CMSIS/Include/core_cm7.h ****   */
 2245:Drivers/CMSIS/Include/core_cm7.h **** __STATIC_INLINE void SCB_EnableDCache (void)
 2246:Drivers/CMSIS/Include/core_cm7.h **** {
@@ -4678,11 +4676,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
 2296:Drivers/CMSIS/Include/core_cm7.h ****     ccsidr = SCB->CCSIDR;
 2297:Drivers/CMSIS/Include/core_cm7.h **** 
 2298:Drivers/CMSIS/Include/core_cm7.h ****                                             /* clean & invalidate D-Cache */
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 79
-
-
 2299:Drivers/CMSIS/Include/core_cm7.h ****     sets = (uint32_t)(CCSIDR_SETS(ccsidr));
 2300:Drivers/CMSIS/Include/core_cm7.h ****     do {
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 79
+
+
 2301:Drivers/CMSIS/Include/core_cm7.h ****       ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
 2302:Drivers/CMSIS/Include/core_cm7.h ****       do {
 2303:Drivers/CMSIS/Include/core_cm7.h ****         SCB->DCCISW = (((sets << SCB_DCCISW_SET_Pos) & SCB_DCCISW_SET_Msk) |
@@ -4738,11 +4736,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  803              	.LVL12:
  804              	.L32:
 2335:Drivers/CMSIS/Include/core_cm7.h ****     do {
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 80
-
-
 2336:Drivers/CMSIS/Include/core_cm7.h ****       ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
  805              		.loc 2 2336 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 80
+
+
  806 002e C0F3C901 		ubfx	r1, r0, #3, #10
  807              	.LVL13:
  808 0032 02E0     		b	.L31
@@ -4798,11 +4796,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  847              	.LBB147:
  848              	.LBB148:
  742:Drivers/CMSIS/Include/cmsis_gcc.h **** }
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 81
-
-
  849              		.loc 3 742 0
  850              		.syntax unified
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 81
+
+
  851              	@ 742 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
  852 005c BFF36F8F 		isb 0xF
  853              	@ 0 "" 2
@@ -4858,11 +4856,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  900              		.syntax unified
  901              	.LBE156:
  902              	.LBE155:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 82
-
-
  903              	.LBB157:
  904              	.LBB158:
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 82
+
+
  742:Drivers/CMSIS/Include/cmsis_gcc.h **** }
  905              		.loc 3 742 0
  906              		.syntax unified
@@ -4918,11 +4916,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  952              	.L34:
 2301:Drivers/CMSIS/Include/core_cm7.h ****       do {
  953              		.loc 2 2301 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 83
-
-
  954 009a C0F3C901 		ubfx	r1, r0, #3, #10
  955              	.LVL22:
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 83
+
+
  956 009e 02E0     		b	.L33
  957              	.LVL23:
  958              	.L54:
@@ -4978,52 +4976,52 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1002              	.LVL28:
  1003              		.thumb
  1004              		.syntax unified
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 84
-
-
  1005              	.LBE168:
  1006              	.LBE167:
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 84
+
+
  1007              	.LBE160:
  1008              	.LBE159:
-  98:Src/main.c    ****   my_initGPIO();
- 1009              		.loc 1 98 0
+  99:Src/main.c    ****   my_initGPIO();
+ 1009              		.loc 1 99 0
  1010 00cc FFF7FEFF 		bl	my_initClocks
  1011              	.LVL29:
-  99:Src/main.c    ****   
- 1012              		.loc 1 99 0
+ 100:Src/main.c    ****   
+ 1012              		.loc 1 100 0
  1013 00d0 FFF7FEFF 		bl	my_initGPIO
  1014              	.LVL30:
- 101:Src/main.c    ****   MX_USART3_UART_Init();
- 1015              		.loc 1 101 0
+ 102:Src/main.c    ****   MX_USART3_UART_Init();
+ 1015              		.loc 1 102 0
  1016 00d4 FFF7FEFF 		bl	MX_ETH_Init
  1017              	.LVL31:
- 102:Src/main.c    ****   usbDevice = MX_USB_DEVICE_Init();
- 1018              		.loc 1 102 0
+ 103:Src/main.c    ****   usbDevice = MX_USB_DEVICE_Init();
+ 1018              		.loc 1 103 0
  1019 00d8 FFF7FEFF 		bl	MX_USART3_UART_Init
  1020              	.LVL32:
- 103:Src/main.c    ****   
- 1021              		.loc 1 103 0
+ 104:Src/main.c    ****   
+ 1021              		.loc 1 104 0
  1022 00dc FFF7FEFF 		bl	MX_USB_DEVICE_Init
  1023              	.LVL33:
  1024 00e0 584B     		ldr	r3, .L65+4
  1025 00e2 1860     		str	r0, [r3]
- 105:Src/main.c    ****   
- 1026              		.loc 1 105 0
+ 106:Src/main.c    ****   
+ 1026              		.loc 1 106 0
  1027 00e4 FFF7FEFF 		bl	zeroArray
  1028              	.LVL34:
- 107:Src/main.c    ****   printf("waiting\r\n");  
- 1029              		.loc 1 107 0
+ 108:Src/main.c    ****   printf("waiting\r\n");  
+ 1029              		.loc 1 108 0
  1030 00e8 4FF4FA60 		mov	r0, #2000
  1031 00ec FFF7FEFF 		bl	HAL_Delay
  1032              	.LVL35:
- 108:Src/main.c    ****   while((strcmp(string, "send_data")) != 0);
- 1033              		.loc 1 108 0
+ 109:Src/main.c    ****   while((strcmp(string, "send_data")) != 0);
+ 1033              		.loc 1 109 0
  1034 00f0 5548     		ldr	r0, .L65+8
  1035 00f2 FFF7FEFF 		bl	puts
  1036              	.LVL36:
  1037              	.L35:
- 109:Src/main.c    ****   printf("start \r\n");  
- 1038              		.loc 1 109 0 discriminator 1
+ 110:Src/main.c    ****   printf("start \r\n");  
+ 1038              		.loc 1 110 0 discriminator 1
  1039 00f6 5549     		ldr	r1, .L65+12
  1040 00f8 5548     		ldr	r0, .L65+16
  1041 00fa FFF7FEFF 		bl	strcmp
@@ -5031,28 +5029,28 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1043 00fe 0546     		mov	r5, r0
  1044 0100 0028     		cmp	r0, #0
  1045 0102 F8D1     		bne	.L35
- 110:Src/main.c    ****   
- 1046              		.loc 1 110 0
+ 111:Src/main.c    ****   
+ 1046              		.loc 1 111 0
  1047 0104 5348     		ldr	r0, .L65+20
  1048 0106 FFF7FEFF 		bl	puts
  1049              	.LVL38:
- 112:Src/main.c    ****   my_TIM2_initInputCaptureTimer();
- 1050              		.loc 1 112 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 85
-
-
+ 113:Src/main.c    ****   my_TIM2_initInputCaptureTimer();
+ 1050              		.loc 1 113 0
  1051 010a FFF7FEFF 		bl	my_DMA_init
  1052              	.LVL39:
- 113:Src/main.c    ****   TIM3_myInit();
- 1053              		.loc 1 113 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 85
+
+
+ 114:Src/main.c    ****   TIM3_myInit();
+ 1053              		.loc 1 114 0
  1054 010e FFF7FEFF 		bl	my_TIM2_initInputCaptureTimer
  1055              	.LVL40:
- 114:Src/main.c    **** 
- 1056              		.loc 1 114 0
+ 115:Src/main.c    **** 
+ 1056              		.loc 1 115 0
  1057 0112 FFF7FEFF 		bl	TIM3_myInit
  1058              	.LVL41:
- 119:Src/main.c    ****   unsigned int firstHalfDone = 0;
- 1059              		.loc 1 119 0
+ 118:Src/main.c    ****   while (1)
+ 1059              		.loc 1 118 0
  1060 0116 0024     		movs	r4, #0
  1061 0118 72E0     		b	.L36
  1062              	.LVL42:
@@ -5098,11 +5096,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1068              		.loc 2 2378 0
  1069 011a 1A46     		mov	r2, r3
  1070              	.LVL43:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 86
-
-
  1071              	.L39:
 2373:Drivers/CMSIS/Include/core_cm7.h ****                       ((ways << SCB_DCCSW_WAY_Pos) & SCB_DCCSW_WAY_Msk)  );
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 86
+
+
  1072              		.loc 2 2373 0
  1073 011c 43F6E073 		movw	r3, #16352
  1074 0120 03EA4013 		and	r3, r3, r0, lsl #5
@@ -5155,34 +5153,34 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1118              	.LBE175:
  1119              	.LBE172:
  1120              	.LBE171:
- 128:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 1121              		.loc 1 128 0
+ 126:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 1121              		.loc 1 126 0
  1122 0148 C6EB0612 		rsb	r2, r6, r6, lsl #4
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 87
-
-
  1123 014c D302     		lsls	r3, r2, #11
  1124 014e 4FF4F041 		mov	r1, #30720
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 87
+
+
  1125 0152 4148     		ldr	r0, .L65+24
  1126 0154 1844     		add	r0, r0, r3
  1127 0156 FFF7FEFF 		bl	CDC_Transmit_FS
  1128              	.LVL50:
  1129              	.L41:
- 129:Src/main.c    ****         } // transfer via USB first half of buffer
- 1130              		.loc 1 129 0 discriminator 1
+ 127:Src/main.c    ****         } // transfer via USB first half of buffer
+ 1130              		.loc 1 127 0 discriminator 1
  1131 015a 404B     		ldr	r3, .L65+28
  1132 015c D3F81832 		ldr	r3, [r3, #536]
  1133 0160 D3F81432 		ldr	r3, [r3, #532]
  1134 0164 002B     		cmp	r3, #0
  1135 0166 F8D1     		bne	.L41
  1136              	.LBE170:
- 126:Src/main.c    ****           SCB_CleanDCache();
- 1137              		.loc 1 126 0 discriminator 2
+ 124:Src/main.c    ****           SCB_CleanDCache();
+ 1137              		.loc 1 124 0 discriminator 2
  1138 0168 0136     		adds	r6, r6, #1
  1139              	.LVL51:
  1140              	.L38:
- 126:Src/main.c    ****           SCB_CleanDCache();
- 1141              		.loc 1 126 0 is_stmt 0 discriminator 1
+ 124:Src/main.c    ****           SCB_CleanDCache();
+ 1141              		.loc 1 124 0 is_stmt 0 discriminator 1
  1142 016a 012E     		cmp	r6, #1
  1143 016c 0ADC     		bgt	.L43
  1144              	.LBB181:
@@ -5218,19 +5216,19 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1171              	.LBE179:
  1172              	.LBE180:
  1173              	.LBE181:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 88
-
-
  1174              	.LBE169:
- 132:Src/main.c    ****         
- 1175              		.loc 1 132 0 discriminator 1
+ 130:Src/main.c    ****         
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 88
+
+
+ 1175              		.loc 1 130 0 discriminator 1
  1176 0184 364B     		ldr	r3, .L65+32
  1177 0186 1B68     		ldr	r3, [r3]
  1178 0188 002B     		cmp	r3, #0
  1179 018a FBD0     		beq	.L43
  1180              	.LBB182:
- 134:Src/main.c    ****           SCB_CleanDCache();
- 1181              		.loc 1 134 0
+ 132:Src/main.c    ****           SCB_CleanDCache();
+ 1181              		.loc 1 132 0
  1182 018c 0226     		movs	r6, #2
  1183              	.LVL55:
  1184 018e 27E0     		b	.L44
@@ -5278,11 +5276,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1222              	@ 753 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
  1223 01b6 BFF34F8F 		dsb 0xF
  1224              	@ 0 "" 2
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 89
-
-
  1225              		.thumb
  1226              		.syntax unified
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 89
+
+
  1227              	.LBE187:
  1228              	.LBE186:
  1229              	.LBB188:
@@ -5300,8 +5298,8 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1240              	.LBE188:
  1241              	.LBE185:
  1242              	.LBE184:
- 136:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 1243              		.loc 1 136 0
+ 134:Src/main.c    ****           while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 1243              		.loc 1 134 0
  1244 01be C6EB0612 		rsb	r2, r6, r6, lsl #4
  1245 01c2 D302     		lsls	r3, r2, #11
  1246 01c4 4FF4F041 		mov	r1, #30720
@@ -5310,21 +5308,21 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1249 01cc FFF7FEFF 		bl	CDC_Transmit_FS
  1250              	.LVL64:
  1251              	.L47:
- 137:Src/main.c    ****         } // transfer via USB first half of buffer
- 1252              		.loc 1 137 0 discriminator 1
+ 135:Src/main.c    ****         } // transfer via USB first half of buffer
+ 1252              		.loc 1 135 0 discriminator 1
  1253 01d0 224B     		ldr	r3, .L65+28
  1254 01d2 D3F81832 		ldr	r3, [r3, #536]
  1255 01d6 D3F81432 		ldr	r3, [r3, #532]
  1256 01da 002B     		cmp	r3, #0
  1257 01dc F8D1     		bne	.L47
  1258              	.LBE183:
- 134:Src/main.c    ****           SCB_CleanDCache();
- 1259              		.loc 1 134 0 discriminator 2
+ 132:Src/main.c    ****           SCB_CleanDCache();
+ 1259              		.loc 1 132 0 discriminator 2
  1260 01de 0136     		adds	r6, r6, #1
  1261              	.LVL65:
  1262              	.L44:
- 134:Src/main.c    ****           SCB_CleanDCache();
- 1263              		.loc 1 134 0 is_stmt 0 discriminator 1
+ 132:Src/main.c    ****           SCB_CleanDCache();
+ 1263              		.loc 1 132 0 is_stmt 0 discriminator 1
  1264 01e0 032E     		cmp	r6, #3
  1265 01e2 0ADC     		bgt	.L63
  1266              	.LBB194:
@@ -5338,11 +5336,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1273              	.LBB190:
  1274              	.LBB191:
  1275              		.loc 3 753 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 90
-
-
  1276              		.syntax unified
  1277              	@ 753 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 90
+
+
  1278 01ec BFF34F8F 		dsb 0xF
  1279              	@ 0 "" 2
  1280              		.thumb
@@ -5364,63 +5362,63 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1294              	.LBE193:
  1295              	.LBE194:
  1296              	.LBE182:
- 139:Src/main.c    ****         
- 1297              		.loc 1 139 0
+ 137:Src/main.c    ****         
+ 1297              		.loc 1 137 0
  1298 01fa 0134     		adds	r4, r4, #1
  1299              	.LVL69:
  1300              	.L37:
- 144:Src/main.c    ****       // "end\0" flag
- 1301              		.loc 1 144 0
- 1302 01fc 142C     		cmp	r4, #20
+ 142:Src/main.c    ****       // "end\0" flag
+ 1301              		.loc 1 142 0
+ 1302 01fc 0C2C     		cmp	r4, #12
  1303 01fe 08D0     		beq	.L64
  1304              	.LVL70:
  1305              	.L36:
- 123:Src/main.c    ****       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
- 1306              		.loc 1 123 0
- 1307 0200 132C     		cmp	r4, #19
+ 121:Src/main.c    ****       if(DMA1_Stream0->NDTR < DMA_BUFFER_SIZE/2) {
+ 1306              		.loc 1 121 0
+ 1307 0200 0B2C     		cmp	r4, #11
  1308 0202 FBD8     		bhi	.L37
- 124:Src/main.c    ****         
- 1309              		.loc 1 124 0
+ 122:Src/main.c    ****         
+ 1309              		.loc 1 122 0
  1310 0204 174B     		ldr	r3, .L65+36
  1311 0206 5B68     		ldr	r3, [r3, #4]
  1312 0208 B3F5F04F 		cmp	r3, #30720
  1313 020c F6D2     		bcs	.L37
  1314              	.LBB195:
- 126:Src/main.c    ****           SCB_CleanDCache();
- 1315              		.loc 1 126 0
+ 124:Src/main.c    ****           SCB_CleanDCache();
+ 1315              		.loc 1 124 0
  1316 020e 2E46     		mov	r6, r5
  1317 0210 ABE7     		b	.L38
  1318              	.L64:
  1319              	.LBE195:
  1320              	.LBB196:
- 146:Src/main.c    ****       buffer[0] = 0x6E65;
- 1321              		.loc 1 146 0
+ 144:Src/main.c    ****       buffer[0] = 0x6E65;
+ 1321              		.loc 1 144 0
  1322 0212 0023     		movs	r3, #0
  1323 0214 144A     		ldr	r2, .L65+40
  1324 0216 1380     		strh	r3, [r2]	@ movhi
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 91
+ 145:Src/main.c    ****       buffer[1] = 0x0064;
+ 1325              		.loc 1 145 0
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 91
 
 
- 147:Src/main.c    ****       buffer[1] = 0x0064;
- 1325              		.loc 1 147 0
  1326 0218 0F48     		ldr	r0, .L65+24
  1327 021a 46F66562 		movw	r2, #28261
  1328 021e 0280     		strh	r2, [r0]	@ movhi
- 148:Src/main.c    ****       buffer[2] = 0x0;
- 1329              		.loc 1 148 0
+ 146:Src/main.c    ****       buffer[2] = 0x0;
+ 1329              		.loc 1 146 0
  1330 0220 6422     		movs	r2, #100
  1331 0222 4280     		strh	r2, [r0, #2]	@ movhi
- 149:Src/main.c    ****       CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned short int));
- 1332              		.loc 1 149 0
+ 147:Src/main.c    ****       CDC_Transmit_FS(buffer, SIZE*sizeof(unsigned short int));
+ 1332              		.loc 1 147 0
  1333 0224 8380     		strh	r3, [r0, #4]	@ movhi
- 150:Src/main.c    ****       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
- 1334              		.loc 1 150 0
+ 148:Src/main.c    ****       while(((USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData))->TxState != 0);
+ 1334              		.loc 1 148 0
  1335 0226 4FF4F041 		mov	r1, #30720
  1336 022a FFF7FEFF 		bl	CDC_Transmit_FS
  1337              	.LVL71:
  1338              	.L50:
- 151:Src/main.c    ****     }
- 1339              		.loc 1 151 0 discriminator 1
+ 149:Src/main.c    ****     }
+ 1339              		.loc 1 149 0 discriminator 1
  1340 022e 0B4B     		ldr	r3, .L65+28
  1341 0230 D3F81832 		ldr	r3, [r3, #536]
  1342 0234 D3F81432 		ldr	r3, [r3, #532]
@@ -5453,22 +5451,22 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1370              		.fpu fpv5-d16
  1372              	TIM2_IRQHandler:
  1373              	.LFB138:
- 158:Src/main.c    ****   
- 1374              		.loc 1 158 0
+ 156:Src/main.c    ****   
+ 1374              		.loc 1 156 0
  1375              		.cfi_startproc
  1376              		@ args = 0, pretend = 0, frame = 0
  1377              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 92
-
-
  1378              		@ link register save eliminated.
- 161:Src/main.c    ****   //GPIOB->ODR ^= (0x1 << 7);
- 1379              		.loc 1 161 0
+ 159:Src/main.c    ****   //GPIOB->ODR ^= (0x1 << 7);
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 92
+
+
+ 1379              		.loc 1 159 0
  1380 0000 4FF08043 		mov	r3, #1073741824
  1381 0004 0022     		movs	r2, #0
  1382 0006 1A61     		str	r2, [r3, #16]
- 166:Src/main.c    **** 
- 1383              		.loc 1 166 0
+ 164:Src/main.c    **** 
+ 1383              		.loc 1 164 0
  1384 0008 7047     		bx	lr
  1385              		.cfi_endproc
  1386              	.LFE138:
@@ -5481,48 +5479,48 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1394              		.fpu fpv5-d16
  1396              	DMA1_Stream0_IRQHandler:
  1397              	.LFB139:
- 168:Src/main.c    ****   
- 1398              		.loc 1 168 0
+ 166:Src/main.c    ****   
+ 1398              		.loc 1 166 0
  1399              		.cfi_startproc
  1400              		@ args = 0, pretend = 0, frame = 0
  1401              		@ frame_needed = 0, uses_anonymous_args = 0
  1402              		@ link register save eliminated.
- 171:Src/main.c    ****   //TIM6->CR1 &= ~(0x1);
- 1403              		.loc 1 171 0
+ 169:Src/main.c    ****   //TIM6->CR1 &= ~(0x1);
+ 1403              		.loc 1 169 0
  1404 0000 094A     		ldr	r2, .L69
  1405 0002 9368     		ldr	r3, [r2, #8]
  1406 0004 43F02803 		orr	r3, r3, #40
  1407 0008 9360     		str	r3, [r2, #8]
- 173:Src/main.c    ****   dmaFlag++;
- 1408              		.loc 1 173 0
+ 171:Src/main.c    ****   dmaFlag++;
+ 1408              		.loc 1 171 0
  1409 000a 084A     		ldr	r2, .L69+4
  1410 000c 5369     		ldr	r3, [r2, #20]
  1411 000e 43F08003 		orr	r3, r3, #128
  1412 0012 5361     		str	r3, [r2, #20]
- 174:Src/main.c    ****   flipFlag++;
- 1413              		.loc 1 174 0
+ 172:Src/main.c    ****   flipFlag++;
+ 1413              		.loc 1 172 0
  1414 0014 064A     		ldr	r2, .L69+8
  1415 0016 1368     		ldr	r3, [r2]
  1416 0018 0133     		adds	r3, r3, #1
  1417 001a 1360     		str	r3, [r2]
- 175:Src/main.c    ****   
- 1418              		.loc 1 175 0
+ 173:Src/main.c    ****   
+ 1418              		.loc 1 173 0
  1419 001c 054A     		ldr	r2, .L69+12
  1420 001e 1368     		ldr	r3, [r2]
  1421 0020 0133     		adds	r3, r3, #1
  1422 0022 1360     		str	r3, [r2]
- 177:Src/main.c    **** 
- 1423              		.loc 1 177 0
+ 175:Src/main.c    **** 
+ 1423              		.loc 1 175 0
  1424 0024 7047     		bx	lr
  1425              	.L70:
  1426 0026 00BF     		.align	2
  1427              	.L69:
  1428 0028 00000240 		.word	1073872896
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 93
-
-
  1429 002c 00040258 		.word	1476527104
  1430 0030 00000000 		.word	.LANCHOR2
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 93
+
+
  1431 0034 00000000 		.word	.LANCHOR1
  1432              		.cfi_endproc
  1433              	.LFE139:
@@ -5535,26 +5533,26 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1441              		.fpu fpv5-d16
  1443              	TIM6_DAC_IRQHandler:
  1444              	.LFB140:
- 179:Src/main.c    ****   // reset interrupt flag
- 1445              		.loc 1 179 0
+ 177:Src/main.c    ****   // reset interrupt flag
+ 1445              		.loc 1 177 0
  1446              		.cfi_startproc
  1447              		@ args = 0, pretend = 0, frame = 0
  1448              		@ frame_needed = 0, uses_anonymous_args = 0
  1449              		@ link register save eliminated.
- 181:Src/main.c    ****   
- 1450              		.loc 1 181 0
+ 179:Src/main.c    ****   
+ 1450              		.loc 1 179 0
  1451 0000 054A     		ldr	r2, .L72
  1452 0002 1369     		ldr	r3, [r2, #16]
  1453 0004 23F00103 		bic	r3, r3, #1
  1454 0008 1361     		str	r3, [r2, #16]
- 187:Src/main.c    **** }
- 1455              		.loc 1 187 0
+ 185:Src/main.c    **** }
+ 1455              		.loc 1 185 0
  1456 000a 044A     		ldr	r2, .L72+4
  1457 000c 5369     		ldr	r3, [r2, #20]
  1458 000e 83F00103 		eor	r3, r3, #1
  1459 0012 5361     		str	r3, [r2, #20]
- 188:Src/main.c    **** 
- 1460              		.loc 1 188 0
+ 186:Src/main.c    **** 
+ 1460              		.loc 1 186 0
  1461 0014 7047     		bx	lr
  1462              	.L73:
  1463 0016 00BF     		.align	2
@@ -5572,17 +5570,17 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1476              		.fpu fpv5-d16
  1478              	__io_putchar:
  1479              	.LFB150:
- 451:Src/main.c    ****   uint8_t c[1];
- 1480              		.loc 1 451 0
+ 449:Src/main.c    ****   uint8_t c[1];
+ 1480              		.loc 1 449 0
  1481              		.cfi_startproc
  1482              		@ args = 0, pretend = 0, frame = 8
  1483              		@ frame_needed = 0, uses_anonymous_args = 0
  1484              	.LVL72:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 94
-
-
  1485 0000 10B5     		push	{r4, lr}
  1486              	.LCFI2:
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 94
+
+
  1487              		.cfi_def_cfa_offset 8
  1488              		.cfi_offset 4, -8
  1489              		.cfi_offset 14, -4
@@ -5590,20 +5588,20 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1491              	.LCFI3:
  1492              		.cfi_def_cfa_offset 16
  1493 0004 0446     		mov	r4, r0
- 453:Src/main.c    ****   HAL_UART_Transmit(&huart3, &c[0], 1, 10);
- 1494              		.loc 1 453 0
+ 451:Src/main.c    ****   HAL_UART_Transmit(&huart3, &c[0], 1, 10);
+ 1494              		.loc 1 451 0
  1495 0006 02A9     		add	r1, sp, #8
  1496 0008 01F8040D 		strb	r0, [r1, #-4]!
- 454:Src/main.c    ****   return ch;
- 1497              		.loc 1 454 0
+ 452:Src/main.c    ****   return ch;
+ 1497              		.loc 1 452 0
  1498 000c 0A23     		movs	r3, #10
  1499 000e 0122     		movs	r2, #1
  1500 0010 0248     		ldr	r0, .L76
  1501              	.LVL73:
  1502 0012 FFF7FEFF 		bl	HAL_UART_Transmit
  1503              	.LVL74:
- 456:Src/main.c    **** 
- 1504              		.loc 1 456 0
+ 454:Src/main.c    **** 
+ 1504              		.loc 1 454 0
  1505 0016 2046     		mov	r0, r4
  1506 0018 02B0     		add	sp, sp, #8
  1507              	.LCFI4:
@@ -5626,8 +5624,8 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1525              		.fpu fpv5-d16
  1527              	_write:
  1528              	.LFB151:
- 459:Src/main.c    ****   int DataIdx;
- 1529              		.loc 1 459 0
+ 457:Src/main.c    ****   int DataIdx;
+ 1529              		.loc 1 457 0
  1530              		.cfi_startproc
  1531              		@ args = 0, pretend = 0, frame = 0
  1532              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -5638,40 +5636,40 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1537              		.cfi_offset 4, -16
  1538              		.cfi_offset 5, -12
  1539              		.cfi_offset 6, -8
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 95
-
-
  1540              		.cfi_offset 14, -4
  1541 0002 1646     		mov	r6, r2
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 95
+
+
  1542              	.LVL77:
- 461:Src/main.c    ****   {
- 1543              		.loc 1 461 0
+ 459:Src/main.c    ****   {
+ 1543              		.loc 1 459 0
  1544 0004 0024     		movs	r4, #0
  1545 0006 05E0     		b	.L79
  1546              	.LVL78:
  1547              	.L80:
- 463:Src/main.c    ****   }
- 1548              		.loc 1 463 0 discriminator 3
+ 461:Src/main.c    ****   }
+ 1548              		.loc 1 461 0 discriminator 3
  1549 0008 4D1C     		adds	r5, r1, #1
  1550              	.LVL79:
  1551 000a 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
  1552 000c FFF7FEFF 		bl	__io_putchar
  1553              	.LVL80:
- 461:Src/main.c    ****   {
- 1554              		.loc 1 461 0 discriminator 3
+ 459:Src/main.c    ****   {
+ 1554              		.loc 1 459 0 discriminator 3
  1555 0010 0134     		adds	r4, r4, #1
  1556              	.LVL81:
- 463:Src/main.c    ****   }
- 1557              		.loc 1 463 0 discriminator 3
+ 461:Src/main.c    ****   }
+ 1557              		.loc 1 461 0 discriminator 3
  1558 0012 2946     		mov	r1, r5
  1559              	.LVL82:
  1560              	.L79:
- 461:Src/main.c    ****   {
- 1561              		.loc 1 461 0 discriminator 1
+ 459:Src/main.c    ****   {
+ 1561              		.loc 1 459 0 discriminator 1
  1562 0014 B442     		cmp	r4, r6
  1563 0016 F7DB     		blt	.L80
- 466:Src/main.c    **** 
- 1564              		.loc 1 466 0
+ 464:Src/main.c    **** 
+ 1564              		.loc 1 464 0
  1565 0018 3046     		mov	r0, r6
  1566 001a 70BD     		pop	{r4, r5, r6, pc}
  1567              		.cfi_endproc
@@ -5685,8 +5683,8 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1576              		.fpu fpv5-d16
  1578              	_Error_Handler:
  1579              	.LFB152:
- 477:Src/main.c    ****   /* USER CODE BEGIN Error_Handler_Debug */
- 1580              		.loc 1 477 0
+ 475:Src/main.c    ****   /* USER CODE BEGIN Error_Handler_Debug */
+ 1580              		.loc 1 475 0
  1581              		.cfi_startproc
  1582              		@ Volatile: function does not return.
  1583              		@ args = 0, pretend = 0, frame = 0
@@ -5698,11 +5696,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1589              		.cfi_endproc
  1590              	.LFE152:
  1592              		.comm	usbDevice,4,4
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 96
-
-
  1593              		.global	transmissionFlag
  1594              		.global	string
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 96
+
+
  1595              		.global	flipFlag
  1596              		.global	dmaFlag
  1597              		.global	debugIndex
@@ -5758,11 +5756,11 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1655              		.section	.rodata.main.str1.4,"aMS",%progbits,1
  1656              		.align	2
  1657              	.LC4:
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 97
-
-
  1658 0000 77616974 		.ascii	"waiting\015\000"
  1658      696E670D 
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 97
+
+
  1658      00
  1659 0009 000000   		.space	3
  1660              	.LC5:
@@ -5818,80 +5816,80 @@ ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 1
  1691              		.file 17 "Inc/usart.h"
  1692              		.file 18 "c:\\gcc\\arm-none-eabi\\include\\stdlib.h"
  1693              		.file 19 "Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h"
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 98
-
-
  1694              		.file 20 "Inc/usb_device.h"
  1695              		.file 21 "Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h"
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 98
+
+
  1696              		.file 22 "c:\\gcc\\arm-none-eabi\\include\\stdio.h"
  1697              		.file 23 "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h"
  1698              		.file 24 "c:\\gcc\\arm-none-eabi\\include\\string.h"
  1699              		.file 25 "<built-in>"
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 99
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 99
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:17     .text.my_initGPIO:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:23     .text.my_initGPIO:00000000 my_initGPIO
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:169    .text.my_initGPIO:00000134 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:178    .text.my_TIM2_initInputCaptureTimer:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:184    .text.my_TIM2_initInputCaptureTimer:00000000 my_TIM2_initInputCaptureTimer
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:245    .text.my_TIM2_initInputCaptureTimer:00000064 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:250    .text.TIM3_myInit:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:256    .text.TIM3_myInit:00000000 TIM3_myInit
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:323    .text.TIM3_myInit:00000068 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:330    .text.zeroArray:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:336    .text.zeroArray:00000000 zeroArray
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:366    .text.zeroArray:00000014 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1653   .orbita_buffer:00000000 buffer
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:371    .text.my_initClocks:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:377    .text.my_initClocks:00000000 my_initClocks
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:540    .text.my_initClocks:00000124 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:547    .text.my_DMA_init:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:553    .text.my_DMA_init:00000000 my_DMA_init
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:690    .text.my_DMA_init:000000cc $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:705    .text.main:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:712    .text.main:00000000 main
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1349   .text.main:00000240 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:17     .text.my_initGPIO:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:23     .text.my_initGPIO:00000000 my_initGPIO
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:169    .text.my_initGPIO:00000134 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:178    .text.my_TIM2_initInputCaptureTimer:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:184    .text.my_TIM2_initInputCaptureTimer:00000000 my_TIM2_initInputCaptureTimer
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:245    .text.my_TIM2_initInputCaptureTimer:00000064 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:250    .text.TIM3_myInit:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:256    .text.TIM3_myInit:00000000 TIM3_myInit
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:323    .text.TIM3_myInit:00000068 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:330    .text.zeroArray:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:336    .text.zeroArray:00000000 zeroArray
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:366    .text.zeroArray:00000014 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1653   .orbita_buffer:00000000 buffer
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:371    .text.my_initClocks:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:377    .text.my_initClocks:00000000 my_initClocks
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:540    .text.my_initClocks:00000124 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:547    .text.my_DMA_init:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:553    .text.my_DMA_init:00000000 my_DMA_init
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:690    .text.my_DMA_init:000000cc $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:705    .text.main:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:712    .text.main:00000000 main
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1349   .text.main:00000240 $d
                             *COM*:00000004 usbDevice
                             *COM*:00000224 hUsbDeviceFS
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1365   .text.TIM2_IRQHandler:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1372   .text.TIM2_IRQHandler:00000000 TIM2_IRQHandler
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1389   .text.DMA1_Stream0_IRQHandler:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1396   .text.DMA1_Stream0_IRQHandler:00000000 DMA1_Stream0_IRQHandler
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1428   .text.DMA1_Stream0_IRQHandler:00000028 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1436   .text.TIM6_DAC_IRQHandler:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1443   .text.TIM6_DAC_IRQHandler:00000000 TIM6_DAC_IRQHandler
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1465   .text.TIM6_DAC_IRQHandler:00000018 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1471   .text.__io_putchar:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1478   .text.__io_putchar:00000000 __io_putchar
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1515   .text.__io_putchar:0000001c $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1520   .text._write:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1527   .text._write:00000000 _write
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1571   .text._Error_Handler:00000000 $t
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1578   .text._Error_Handler:00000000 _Error_Handler
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1639   .bss.transmissionFlag:00000000 transmissionFlag
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1646   .data.string:00000000 string
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1633   .bss.flipFlag:00000000 flipFlag
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1626   .bss.dmaFlag:00000000 dmaFlag
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1619   .bss.debugIndex:00000000 debugIndex
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1365   .text.TIM2_IRQHandler:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1372   .text.TIM2_IRQHandler:00000000 TIM2_IRQHandler
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1389   .text.DMA1_Stream0_IRQHandler:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1396   .text.DMA1_Stream0_IRQHandler:00000000 DMA1_Stream0_IRQHandler
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1428   .text.DMA1_Stream0_IRQHandler:00000028 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1436   .text.TIM6_DAC_IRQHandler:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1443   .text.TIM6_DAC_IRQHandler:00000000 TIM6_DAC_IRQHandler
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1465   .text.TIM6_DAC_IRQHandler:00000018 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1471   .text.__io_putchar:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1478   .text.__io_putchar:00000000 __io_putchar
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1515   .text.__io_putchar:0000001c $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1520   .text._write:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1527   .text._write:00000000 _write
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1571   .text._Error_Handler:00000000 $t
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1578   .text._Error_Handler:00000000 _Error_Handler
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1639   .bss.transmissionFlag:00000000 transmissionFlag
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1646   .data.string:00000000 string
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1633   .bss.flipFlag:00000000 flipFlag
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1626   .bss.dmaFlag:00000000 dmaFlag
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1619   .bss.debugIndex:00000000 debugIndex
                             *COM*:00000040 debugBuffer
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1613   .bss.bufferValue:00000000 bufferValue
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1607   .bss.bufferIndex:00000000 bufferIndex
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1604   .bss.bufferIndex:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1610   .bss.bufferValue:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1616   .bss.debugIndex:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1622   .bss.dmaFlag:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1629   .bss.flipFlag:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1636   .bss.transmissionFlag:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1642   .data.string:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1650   .orbita_buffer:00000000 $d
-ARM GAS  C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s 			page 100
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1613   .bss.bufferValue:00000000 bufferValue
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1607   .bss.bufferIndex:00000000 bufferIndex
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1604   .bss.bufferIndex:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1610   .bss.bufferValue:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1616   .bss.debugIndex:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1622   .bss.dmaFlag:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1629   .bss.flipFlag:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1636   .bss.transmissionFlag:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1642   .data.string:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1650   .orbita_buffer:00000000 $d
+ARM GAS  C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s 			page 100
 
 
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1656   .rodata.main.str1.4:00000000 $d
-C:\Users\qqffx\AppData\Local\Temp\cc3rzi6w.s:1666   .rodata.my_DMA_init.str1.4:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1656   .rodata.main.str1.4:00000000 $d
+C:\Users\qqffx\AppData\Local\Temp\ccUuCqvf.s:1666   .rodata.my_DMA_init.str1.4:00000000 $d
 
 UNDEFINED SYMBOLS
 puts

@@ -17,7 +17,7 @@
 #define TIM2_CCR1_Address ((unsigned int)0x40000000 + 0x34)
 #define DMA_BUFFER_SIZE   61440
 #define SIZE 15360
-#define NUMBER_OF_CYCLE 20
+#define NUMBER_OF_CYCLE 12
 #define Destination_Address ((unsigned int)0x30000000)
 
 USBD_HandleTypeDef hUsbDeviceFS;
@@ -81,6 +81,7 @@ static void writeFile(void);
   *
   * @retval None
   */
+
 int main(void)
 {
 
@@ -114,10 +115,7 @@ int main(void)
   TIM3_myInit();
 
   
-  unsigned int circ_buffer_ptr = 0;
-  unsigned int counter = 0;
   unsigned int stopFlag = 0;
-  unsigned int firstHalfDone = 0;
   while (1)
   {
     if(stopFlag < NUMBER_OF_CYCLE) {
